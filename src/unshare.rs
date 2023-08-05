@@ -1,3 +1,4 @@
+use crate::exec_shell::exec_shell;
 use ::libc;
 use ::c2rust_bitfields::BitfieldStruct;
 extern "C" {
@@ -137,7 +138,6 @@ extern "C" {
     fn errx(__status: libc::c_int, __format: *const libc::c_char, _: ...) -> !;
     fn cap_last_cap() -> libc::c_int;
     fn cap_permitted_to_ambient();
-    fn exec_shell() -> !;
     fn signame_to_signum(sig: *const libc::c_char) -> libc::c_int;
     fn str2num_or_err(
         str: *const libc::c_char,
@@ -2889,6 +2889,8 @@ unsafe fn main_0(
         );
     }
     exec_shell();
+    // unreachable
+    1
 }
 pub fn main() {
     let mut args: Vec::<*mut libc::c_char> = Vec::new();
