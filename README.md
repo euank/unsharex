@@ -1,5 +1,13 @@
 ## unsharex
 
+### Status
+
+Currently this is identical to the upstream unshare command. It does not implement additional functionality yet.
+
+The code's being refactored first.
+
+### Why?
+
 unsharex (unshare eXtended) is a modified version of the util-linux "unshare" utility.
 
 This version of unshare exists for two reasons:
@@ -16,4 +24,9 @@ The original AUTHORS and COPYING file are preserved.
 As such, this is only available under the GPLv2 license.
 
 
-### Changes
+### Differences
+
+Known differnces:
+
+* More integ tests than upstream (upstream does not have integ tests for unshare it appears)
+* Command name differs (unsharex vs unshare)
