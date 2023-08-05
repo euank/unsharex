@@ -2,7 +2,6 @@
 mod caputils;
 mod exec_shell;
 mod idcache;
-mod mbsedit;
 mod procfs;
 mod pwdutils;
 mod signames;
