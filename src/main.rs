@@ -1,4 +1,4 @@
-#![feature(c_variadic, extern_types, label_break_value, core_intrinsics, thread_local)]
+#![feature(c_variadic, extern_types, core_intrinsics, thread_local)]
 mod caputils;
 mod exec_shell;
 mod idcache;
