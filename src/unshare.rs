@@ -7,7 +7,6 @@ extern "C" {
     pub type _IO_marker;
     fn __errno_location() -> *mut libc::c_int;
     static mut program_invocation_short_name: *mut libc::c_char;
-    static mut optarg: *mut libc::c_char;
     static mut optind: libc::c_int;
     fn getopt_long(
         ___argc: libc::c_int,
@@ -1949,10 +1948,11 @@ unsafe extern "C" fn usage() -> ! {
     );
     exit(0 as libc::c_int);
 }
+
 unsafe fn main_0(
     argc: libc::c_int,
     argv: *mut *mut libc::c_char,
-) -> libc::c_int {
+) -> i32 {
     static mut longopts: [option; 30] = [
         {
             let init = option {
@@ -2251,29 +2251,32 @@ unsafe fn main_0(
     let mut force_uid: libc::c_int = 0 as libc::c_int;
     let mut force_gid: libc::c_int = 0 as libc::c_int;
     let mut uid: uid_t = 0 as libc::c_int as uid_t;
-    let real_euid: uid_t = geteuid();
+    let real_euid: uid_t = unsafe { geteuid() };
     let mut gid: gid_t = 0 as libc::c_int as gid_t;
-    let real_egid: gid_t = getegid();
+    let real_egid: gid_t = unsafe { getegid() };
     let mut keepcaps: libc::c_int = 0 as libc::c_int;
     let mut monotonic: int64_t = 0 as libc::c_int as int64_t;
     let mut boottime: int64_t = 0 as libc::c_int as int64_t;
     let mut force_monotonic: libc::c_int = 0 as libc::c_int;
     let mut force_boottime: libc::c_int = 0 as libc::c_int;
-    setlocale(6 as libc::c_int, b"\0" as *const u8 as *const libc::c_char);
-    bindtextdomain(
-        b"util-linux\0" as *const u8 as *const libc::c_char,
-        b"/usr/share/locale\0" as *const u8 as *const libc::c_char,
-    );
-    textdomain(b"util-linux\0" as *const u8 as *const libc::c_char);
-    close_stdout_atexit();
+    unsafe { setlocale(6 as libc::c_int, b"\0" as *const u8 as *const libc::c_char) };
+    unsafe {
+        bindtextdomain(
+            b"util-linux\0" as *const u8 as *const libc::c_char,
+            b"/usr/share/locale\0" as *const u8 as *const libc::c_char,
+        );
+    }
+    unsafe { textdomain(b"util-linux\0" as *const u8 as *const libc::c_char); }
+    unsafe { close_stdout_atexit(); }
+    let mut optarg: *mut libc::c_char = 0 as *mut i8;
     loop {
-        c = getopt_long(
+        c = unsafe { getopt_long(
             argc,
             argv as *const *mut libc::c_char,
             b"+fhVmuinpCTUrR:w:S:G:c\0" as *const u8 as *const libc::c_char,
             longopts.as_ptr(),
             0 as *mut libc::c_int,
-        );
+        ) };
         if !(c != -(1 as libc::c_int)) {
             break;
         }
@@ -2888,10 +2891,9 @@ unsafe fn main_0(
             *argv.offset(optind as isize),
         );
     }
-    exec_shell();
-    // unreachable
-    1
+    exec_shell()
 }
+
 pub fn main() {
     let mut args: Vec::<*mut libc::c_char> = Vec::new();
     for arg in ::std::env::args() {
@@ -2902,12 +2904,10 @@ pub fn main() {
         );
     }
     args.push(::core::ptr::null_mut());
-    unsafe {
-        ::std::process::exit(
-            main_0(
-                (args.len() - 1) as libc::c_int,
-                args.as_mut_ptr() as *mut *mut libc::c_char,
-            ) as i32,
-        )
-    }
+    std::process::exit(
+        unsafe { main_0(
+            (args.len() - 1) as libc::c_int,
+            args.as_mut_ptr() as *mut *mut libc::c_char,
+        ) }
+    );
 }
