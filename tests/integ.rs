@@ -178,9 +178,9 @@ fn test_make_each_ns() {
 
             for ns2 in &nses {
                 if ns.0 == ns2.0 {
-                    assert_ne!(outns.get(ns2.0), root_nses.get(ns2.0));
+                    assert_ne!(outns.get(ns2.0), root_nses.get(ns2.0), "unsharex={}, ns={}", unsharex, ns.0);
                 } else {
-                    assert_eq!(outns.get(ns2.0), root_nses.get(ns2.0));
+                    assert_eq!(outns.get(ns2.0), root_nses.get(ns2.0), "unsharex={}, ns={}", unsharex, ns.0);
                 }
             }
 
