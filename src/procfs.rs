@@ -292,9 +292,9 @@ pub struct ul_debug_maskname {
     pub help: *const libc::c_char,
 }
 #[inline]
-unsafe extern "C" fn xusleep(mut usec: useconds_t) -> libc::c_int {
+unsafe extern "C" fn xusleep(usec: useconds_t) -> libc::c_int {
     let mut waittime: timespec = {
-        let mut init = timespec {
+        let init = timespec {
             tv_sec: usec as libc::c_long / 1000000 as libc::c_long,
             tv_nsec: usec as libc::c_long % 1000000 as libc::c_long
                 * 1000 as libc::c_int as libc::c_long,
@@ -305,12 +305,12 @@ unsafe extern "C" fn xusleep(mut usec: useconds_t) -> libc::c_int {
 }
 #[inline]
 unsafe extern "C" fn fopen_at(
-    mut dir: libc::c_int,
-    mut filename: *const libc::c_char,
-    mut flags: libc::c_int,
-    mut mode: *const libc::c_char,
+    dir: libc::c_int,
+    filename: *const libc::c_char,
+    flags: libc::c_int,
+    mode: *const libc::c_char,
 ) -> *mut FILE {
-    let mut fd: libc::c_int = openat(dir, filename, flags);
+    let fd: libc::c_int = openat(dir, filename, flags);
     let mut ret: *mut FILE = 0 as *mut FILE;
     if fd < 0 as libc::c_int {
         return 0 as *mut FILE;
@@ -322,7 +322,7 @@ unsafe extern "C" fn fopen_at(
     return ret;
 }
 #[inline]
-unsafe extern "C" fn xreaddir(mut dp: *mut DIR) -> *mut dirent {
+unsafe extern "C" fn xreaddir(dp: *mut DIR) -> *mut dirent {
     let mut d: *mut dirent = 0 as *mut dirent;
     loop {
         d = readdir(dp);
@@ -345,7 +345,7 @@ unsafe extern "C" fn xreaddir(mut dp: *mut DIR) -> *mut dirent {
 }
 #[inline]
 unsafe extern "C" fn read_all(
-    mut fd: libc::c_int,
+    fd: libc::c_int,
     mut buf: *mut libc::c_char,
     mut count: size_t,
 ) -> ssize_t {
@@ -383,8 +383,8 @@ unsafe extern "C" fn read_all(
 }
 #[inline]
 unsafe extern "C" fn ul_debug_parse_mask(
-    mut flagnames: *const ul_debug_maskname,
-    mut mask: *const libc::c_char,
+    flagnames: *const ul_debug_maskname,
+    mask: *const libc::c_char,
 ) -> libc::c_int {
     let mut res: libc::c_int = 0;
     let mut ptr: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -433,7 +433,7 @@ unsafe extern "C" fn ul_debug_parse_mask(
 static mut ulprocfs_debug_mask: libc::c_int = 0;
 static mut ulprocfs_masknames: [ul_debug_maskname; 1] = [
     {
-        let mut init = ul_debug_maskname {
+        let init = ul_debug_maskname {
             name: 0 as *const libc::c_char,
             mask: 0 as libc::c_int,
             help: 0 as *const libc::c_char,
@@ -443,9 +443,9 @@ static mut ulprocfs_masknames: [ul_debug_maskname; 1] = [
 ];
 #[inline]
 unsafe extern "C" fn ul_debugobj(
-    mut handler: *const libc::c_void,
-    mut mesg: *const libc::c_char,
-    mut args: ...
+    handler: *const libc::c_void,
+    mesg: *const libc::c_char,
+    args: ...
 ) {
     let mut ap: ::core::ffi::VaListImpl;
     if !handler.is_null()
@@ -462,7 +462,7 @@ pub unsafe extern "C" fn ul_procfs_init_debug() {
     if ulprocfs_debug_mask != 0 {
         return;
     }
-    let mut envstr: *const libc::c_char = if 0 as libc::c_int != 0 {
+    let envstr: *const libc::c_char = if 0 as libc::c_int != 0 {
         0 as *mut libc::c_char
     } else {
         getenv(b"ULPROCFS_DEBUG\0" as *const u8 as *const libc::c_char)
@@ -493,10 +493,10 @@ pub unsafe extern "C" fn ul_procfs_init_debug() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_new_procfs_path(
-    mut pid: pid_t,
-    mut prefix: *const libc::c_char,
+    pid: pid_t,
+    prefix: *const libc::c_char,
 ) -> *mut path_cxt {
-    let mut pc: *mut path_cxt = ul_new_path(0 as *const libc::c_char);
+    let pc: *mut path_cxt = ul_new_path(0 as *const libc::c_char);
     if pc.is_null() {
         return 0 as *mut path_cxt;
     }
@@ -524,8 +524,8 @@ pub unsafe extern "C" fn ul_new_procfs_path(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_process_init_path(
-    mut pc: *mut path_cxt,
-    mut pid: pid_t,
+    pc: *mut path_cxt,
+    pid: pid_t,
 ) -> libc::c_int {
     let mut prc: *mut procfs_process = 0 as *mut procfs_process;
     let mut rc: libc::c_int = 0;
@@ -588,7 +588,7 @@ pub unsafe extern "C" fn procfs_process_init_path(
     (*prc).pid = pid;
     return 0 as libc::c_int;
 }
-unsafe extern "C" fn procfs_process_deinit_path(mut pc: *mut path_cxt) {
+unsafe extern "C" fn procfs_process_deinit_path(pc: *mut path_cxt) {
     let mut prc: *mut procfs_process = 0 as *mut procfs_process;
     if pc.is_null() {
         return;
@@ -614,9 +614,9 @@ unsafe extern "C" fn procfs_process_deinit_path(mut pc: *mut path_cxt) {
     ul_path_set_dialect(pc, 0 as *mut libc::c_void, None);
 }
 unsafe extern "C" fn read_procfs_file(
-    mut fd: libc::c_int,
-    mut buf: *mut libc::c_char,
-    mut bufsz: size_t,
+    fd: libc::c_int,
+    buf: *mut libc::c_char,
+    bufsz: size_t,
 ) -> ssize_t {
     let mut sz: ssize_t = 0 as libc::c_int as ssize_t;
     let mut i: size_t = 0;
@@ -642,18 +642,18 @@ unsafe extern "C" fn read_procfs_file(
     return sz;
 }
 unsafe extern "C" fn procfs_process_get_data_for(
-    mut pc: *mut path_cxt,
-    mut buf: *mut libc::c_char,
-    mut bufsz: size_t,
-    mut fname: *const libc::c_char,
+    pc: *mut path_cxt,
+    buf: *mut libc::c_char,
+    bufsz: size_t,
+    fname: *const libc::c_char,
 ) -> ssize_t {
-    let mut fd: libc::c_int = ul_path_open(
+    let fd: libc::c_int = ul_path_open(
         pc,
         0 as libc::c_int | 0o2000000 as libc::c_int,
         fname,
     );
     if fd >= 0 as libc::c_int {
-        let mut sz: ssize_t = read_procfs_file(fd, buf, bufsz);
+        let sz: ssize_t = read_procfs_file(fd, buf, bufsz);
         close(fd);
         return sz;
     }
@@ -661,9 +661,9 @@ unsafe extern "C" fn procfs_process_get_data_for(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_process_get_cmdline(
-    mut pc: *mut path_cxt,
-    mut buf: *mut libc::c_char,
-    mut bufsz: size_t,
+    pc: *mut path_cxt,
+    buf: *mut libc::c_char,
+    bufsz: size_t,
 ) -> ssize_t {
     return procfs_process_get_data_for(
         pc,
@@ -674,9 +674,9 @@ pub unsafe extern "C" fn procfs_process_get_cmdline(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_process_get_cmdname(
-    mut pc: *mut path_cxt,
-    mut buf: *mut libc::c_char,
-    mut bufsz: size_t,
+    pc: *mut path_cxt,
+    buf: *mut libc::c_char,
+    bufsz: size_t,
 ) -> ssize_t {
     return procfs_process_get_data_for(
         pc,
@@ -687,9 +687,9 @@ pub unsafe extern "C" fn procfs_process_get_cmdname(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_process_get_stat(
-    mut pc: *mut path_cxt,
-    mut buf: *mut libc::c_char,
-    mut bufsz: size_t,
+    pc: *mut path_cxt,
+    buf: *mut libc::c_char,
+    bufsz: size_t,
 ) -> ssize_t {
     return procfs_process_get_data_for(
         pc,
@@ -700,9 +700,9 @@ pub unsafe extern "C" fn procfs_process_get_stat(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_process_get_stat_nth(
-    mut pc: *mut path_cxt,
-    mut n: libc::c_int,
-    mut re: *mut uintmax_t,
+    pc: *mut path_cxt,
+    n: libc::c_int,
+    re: *mut uintmax_t,
 ) -> libc::c_int {
     let mut rc: ssize_t = 0;
     let mut key: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -752,8 +752,8 @@ pub unsafe extern "C" fn procfs_process_get_stat_nth(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_process_get_uid(
-    mut pc: *mut path_cxt,
-    mut uid: *mut uid_t,
+    pc: *mut path_cxt,
+    uid: *mut uid_t,
 ) -> libc::c_int {
     let mut sb: stat = stat {
         st_dev: 0,
@@ -781,9 +781,9 @@ pub unsafe extern "C" fn procfs_process_get_uid(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_process_next_tid(
-    mut pc: *mut path_cxt,
-    mut sub: *mut *mut DIR,
-    mut tid: *mut pid_t,
+    pc: *mut path_cxt,
+    sub: *mut *mut DIR,
+    tid: *mut pid_t,
 ) -> libc::c_int {
     let mut d: *mut dirent = 0 as *mut dirent;
     if pc.is_null() || sub.is_null() || tid.is_null() {
@@ -810,9 +810,9 @@ pub unsafe extern "C" fn procfs_process_next_tid(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_process_next_fd(
-    mut pc: *mut path_cxt,
-    mut sub: *mut *mut DIR,
-    mut fd: *mut libc::c_int,
+    pc: *mut path_cxt,
+    sub: *mut *mut DIR,
+    fd: *mut libc::c_int,
 ) -> libc::c_int {
     let mut d: *mut dirent = 0 as *mut dirent;
     if pc.is_null() || sub.is_null() || fd.is_null() {
@@ -848,7 +848,7 @@ pub unsafe extern "C" fn procfs_process_next_fd(
     return 1 as libc::c_int;
 }
 #[no_mangle]
-pub unsafe extern "C" fn procfs_dirent_is_process(mut d: *mut dirent) -> libc::c_int {
+pub unsafe extern "C" fn procfs_dirent_is_process(d: *mut dirent) -> libc::c_int {
     if (*d).d_type as libc::c_int != DT_DIR as libc::c_int
         && (*d).d_type as libc::c_int != DT_UNKNOWN as libc::c_int
     {
@@ -864,8 +864,8 @@ pub unsafe extern "C" fn procfs_dirent_is_process(mut d: *mut dirent) -> libc::c
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_dirent_get_pid(
-    mut d: *mut dirent,
-    mut pid: *mut pid_t,
+    d: *mut dirent,
+    pid: *mut pid_t,
 ) -> libc::c_int {
     let mut num: uint64_t = 0;
     if procfs_dirent_is_process(d) == 0 {
@@ -881,9 +881,9 @@ pub unsafe extern "C" fn procfs_dirent_get_pid(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_dirent_get_uid(
-    mut procfs: *mut DIR,
-    mut d: *mut dirent,
-    mut uid: *mut uid_t,
+    procfs: *mut DIR,
+    d: *mut dirent,
+    uid: *mut uid_t,
 ) -> libc::c_int {
     let mut st: stat = stat {
         st_dev: 0,
@@ -914,9 +914,9 @@ pub unsafe extern "C" fn procfs_dirent_get_uid(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_dirent_match_uid(
-    mut procfs: *mut DIR,
-    mut d: *mut dirent,
-    mut uid: uid_t,
+    procfs: *mut DIR,
+    d: *mut dirent,
+    uid: uid_t,
 ) -> libc::c_int {
     let mut x: uid_t = 0;
     if procfs_dirent_get_uid(procfs, d, &mut x) == 0 as libc::c_int {
@@ -926,10 +926,10 @@ pub unsafe extern "C" fn procfs_dirent_match_uid(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_dirent_get_name(
-    mut procfs: *mut DIR,
-    mut d: *mut dirent,
-    mut buf: *mut libc::c_char,
-    mut bufsz: size_t,
+    procfs: *mut DIR,
+    d: *mut dirent,
+    buf: *mut libc::c_char,
+    bufsz: size_t,
 ) -> libc::c_int {
     let mut f: *mut FILE = 0 as *mut FILE;
     let mut sz: size_t = 0;
@@ -989,9 +989,9 @@ pub unsafe extern "C" fn procfs_dirent_get_name(
 }
 #[no_mangle]
 pub unsafe extern "C" fn procfs_dirent_match_name(
-    mut procfs: *mut DIR,
-    mut d: *mut dirent,
-    mut name: *const libc::c_char,
+    procfs: *mut DIR,
+    d: *mut dirent,
+    name: *const libc::c_char,
 ) -> libc::c_int {
     let mut buf: [libc::c_char; 33] = [0; 33];
     if procfs_dirent_get_name(
@@ -1006,7 +1006,7 @@ pub unsafe extern "C" fn procfs_dirent_match_name(
     return 0 as libc::c_int;
 }
 #[no_mangle]
-pub unsafe extern "C" fn fd_is_procfs(mut fd: libc::c_int) -> libc::c_int {
+pub unsafe extern "C" fn fd_is_procfs(fd: libc::c_int) -> libc::c_int {
     let mut st: statfs = statfs {
         f_type: 0,
         f_bsize: 0,
@@ -1040,8 +1040,8 @@ pub unsafe extern "C" fn fd_is_procfs(mut fd: libc::c_int) -> libc::c_int {
     return (st.f_type == 0x9fa0 as libc::c_int as libc::c_long) as libc::c_int;
 }
 unsafe extern "C" fn strdup_procfs_file(
-    mut pid: pid_t,
-    mut name: *const libc::c_char,
+    pid: pid_t,
+    name: *const libc::c_char,
 ) -> *mut libc::c_char {
     let mut buf: [libc::c_char; 8192] = [0; 8192];
     let mut re: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -1069,10 +1069,10 @@ unsafe extern "C" fn strdup_procfs_file(
     return re;
 }
 #[no_mangle]
-pub unsafe extern "C" fn pid_get_cmdname(mut pid: pid_t) -> *mut libc::c_char {
+pub unsafe extern "C" fn pid_get_cmdname(pid: pid_t) -> *mut libc::c_char {
     return strdup_procfs_file(pid, b"comm\0" as *const u8 as *const libc::c_char);
 }
 #[no_mangle]
-pub unsafe extern "C" fn pid_get_cmdline(mut pid: pid_t) -> *mut libc::c_char {
+pub unsafe extern "C" fn pid_get_cmdline(pid: pid_t) -> *mut libc::c_char {
     return strdup_procfs_file(pid, b"cmdline\0" as *const u8 as *const libc::c_char);
 }

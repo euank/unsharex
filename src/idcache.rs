@@ -54,8 +54,8 @@ pub struct idcache {
 }
 #[no_mangle]
 pub unsafe extern "C" fn get_id(
-    mut ic: *mut idcache,
-    mut id: libc::c_ulong,
+    ic: *mut idcache,
+    id: libc::c_ulong,
 ) -> *mut identry {
     let mut ent: *mut identry = 0 as *mut identry;
     if ic.is_null() {
@@ -78,10 +78,10 @@ pub unsafe extern "C" fn new_idcache() -> *mut idcache {
     ) as *mut idcache;
 }
 #[no_mangle]
-pub unsafe extern "C" fn free_idcache(mut ic: *mut idcache) {
+pub unsafe extern "C" fn free_idcache(ic: *mut idcache) {
     let mut ent: *mut identry = (*ic).ent;
     while !ent.is_null() {
-        let mut next: *mut identry = (*ent).next;
+        let next: *mut identry = (*ent).next;
         free((*ent).name as *mut libc::c_void);
         free(ent as *mut libc::c_void);
         ent = next;
@@ -89,9 +89,9 @@ pub unsafe extern "C" fn free_idcache(mut ic: *mut idcache) {
     free(ic as *mut libc::c_void);
 }
 unsafe extern "C" fn add_id(
-    mut ic: *mut idcache,
-    mut name: *mut libc::c_char,
-    mut id: libc::c_ulong,
+    ic: *mut idcache,
+    name: *mut libc::c_char,
+    id: libc::c_ulong,
 ) {
     let mut ent: *mut identry = 0 as *mut identry;
     let mut x: *mut identry = 0 as *mut identry;
@@ -149,10 +149,10 @@ unsafe extern "C" fn add_id(
     (*ic).width = if (*ic).width < w { w } else { (*ic).width };
 }
 #[no_mangle]
-pub unsafe extern "C" fn add_uid(mut cache: *mut idcache, mut id: libc::c_ulong) {
-    let mut ent: *mut identry = get_id(cache, id);
+pub unsafe extern "C" fn add_uid(cache: *mut idcache, id: libc::c_ulong) {
+    let ent: *mut identry = get_id(cache, id);
     if ent.is_null() {
-        let mut pw: *mut passwd = getpwuid(id as uid_t);
+        let pw: *mut passwd = getpwuid(id as uid_t);
         add_id(
             cache,
             if !pw.is_null() { (*pw).pw_name } else { 0 as *mut libc::c_char },
@@ -161,10 +161,10 @@ pub unsafe extern "C" fn add_uid(mut cache: *mut idcache, mut id: libc::c_ulong)
     }
 }
 #[no_mangle]
-pub unsafe extern "C" fn add_gid(mut cache: *mut idcache, mut id: libc::c_ulong) {
-    let mut ent: *mut identry = get_id(cache, id);
+pub unsafe extern "C" fn add_gid(cache: *mut idcache, id: libc::c_ulong) {
+    let ent: *mut identry = get_id(cache, id);
     if ent.is_null() {
-        let mut gr: *mut group = getgrgid(id as gid_t);
+        let gr: *mut group = getgrgid(id as gid_t);
         add_id(
             cache,
             if !gr.is_null() { (*gr).gr_name } else { 0 as *mut libc::c_char },

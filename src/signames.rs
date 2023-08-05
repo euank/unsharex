@@ -41,7 +41,7 @@ pub struct C2RustUnnamed_1 {}
 #[repr(C)]
 pub struct C2RustUnnamed_2 {}
 #[inline]
-unsafe extern "C" fn c_tolower(mut c: libc::c_int) -> libc::c_int {
+unsafe extern "C" fn c_tolower(c: libc::c_int) -> libc::c_int {
     match c {
         65 | 66 | 67 | 68 | 69 | 70 | 71 | 72 | 73 | 74 | 75 | 76 | 77 | 78 | 79 | 80
         | 81 | 82 | 83 | 84 | 85 | 86 | 87 | 88 | 89 | 90 => {
@@ -58,8 +58,8 @@ unsafe extern "C" fn c_strncasecmp(
 ) -> libc::c_int {
     let mut res: libc::c_int = 0 as libc::c_int;
     while n > 0 as libc::c_int as libc::c_ulong {
-        let mut x: libc::c_uint = *a as libc::c_uint;
-        let mut y: libc::c_uint = *b as libc::c_uint;
+        let x: libc::c_uint = *a as libc::c_uint;
+        let y: libc::c_uint = *b as libc::c_uint;
         res = c_tolower(x as libc::c_int) - c_tolower(y as libc::c_int);
         if res != 0 {
             break;
@@ -83,8 +83,8 @@ unsafe extern "C" fn c_strcasecmp(
         return 0 as libc::c_int;
     }
     while *a as libc::c_int != '\0' as i32 {
-        let mut x: libc::c_uint = *a as libc::c_uint;
-        let mut y: libc::c_uint = *b as libc::c_uint;
+        let x: libc::c_uint = *a as libc::c_uint;
+        let y: libc::c_uint = *b as libc::c_uint;
         res = c_tolower(x as libc::c_int) - c_tolower(y as libc::c_int);
         if res != 0 {
             break;
@@ -98,238 +98,238 @@ unsafe extern "C" fn c_strcasecmp(
 }
 static mut ul_signames: [ul_signal_name; 34] = [
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"HUP\0" as *const u8 as *const libc::c_char,
             val: 1 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"INT\0" as *const u8 as *const libc::c_char,
             val: 2 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"QUIT\0" as *const u8 as *const libc::c_char,
             val: 3 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"ILL\0" as *const u8 as *const libc::c_char,
             val: 4 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"TRAP\0" as *const u8 as *const libc::c_char,
             val: 5 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"ABRT\0" as *const u8 as *const libc::c_char,
             val: 6 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"IOT\0" as *const u8 as *const libc::c_char,
             val: 6 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"BUS\0" as *const u8 as *const libc::c_char,
             val: 7 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"FPE\0" as *const u8 as *const libc::c_char,
             val: 8 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"KILL\0" as *const u8 as *const libc::c_char,
             val: 9 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"USR1\0" as *const u8 as *const libc::c_char,
             val: 10 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"SEGV\0" as *const u8 as *const libc::c_char,
             val: 11 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"USR2\0" as *const u8 as *const libc::c_char,
             val: 12 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"PIPE\0" as *const u8 as *const libc::c_char,
             val: 13 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"ALRM\0" as *const u8 as *const libc::c_char,
             val: 14 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"TERM\0" as *const u8 as *const libc::c_char,
             val: 15 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"STKFLT\0" as *const u8 as *const libc::c_char,
             val: 16 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"CHLD\0" as *const u8 as *const libc::c_char,
             val: 17 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"CLD\0" as *const u8 as *const libc::c_char,
             val: 17 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"CONT\0" as *const u8 as *const libc::c_char,
             val: 18 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"STOP\0" as *const u8 as *const libc::c_char,
             val: 19 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"TSTP\0" as *const u8 as *const libc::c_char,
             val: 20 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"TTIN\0" as *const u8 as *const libc::c_char,
             val: 21 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"TTOU\0" as *const u8 as *const libc::c_char,
             val: 22 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"URG\0" as *const u8 as *const libc::c_char,
             val: 23 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"XCPU\0" as *const u8 as *const libc::c_char,
             val: 24 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"XFSZ\0" as *const u8 as *const libc::c_char,
             val: 25 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"VTALRM\0" as *const u8 as *const libc::c_char,
             val: 26 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"PROF\0" as *const u8 as *const libc::c_char,
             val: 27 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"WINCH\0" as *const u8 as *const libc::c_char,
             val: 28 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"IO\0" as *const u8 as *const libc::c_char,
             val: 29 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"POLL\0" as *const u8 as *const libc::c_char,
             val: 29 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"PWR\0" as *const u8 as *const libc::c_char,
             val: 30 as libc::c_int,
         };
         init
     },
     {
-        let mut init = ul_signal_name {
+        let init = ul_signal_name {
             name: b"SYS\0" as *const u8 as *const libc::c_char,
             val: 31 as libc::c_int,
         };
@@ -413,7 +413,7 @@ pub unsafe extern "C" fn signame_to_signum(mut sig: *const libc::c_char) -> libc
 }
 #[no_mangle]
 pub unsafe extern "C" fn signum_to_signame(
-    mut signum: libc::c_int,
+    signum: libc::c_int,
 ) -> *const libc::c_char {
     let mut n: size_t = 0;
     n = 0 as libc::c_int as size_t;
@@ -432,9 +432,9 @@ pub unsafe extern "C" fn signum_to_signame(
 }
 #[no_mangle]
 pub unsafe extern "C" fn get_signame_by_idx(
-    mut idx: size_t,
-    mut signame: *mut *const libc::c_char,
-    mut signum: *mut libc::c_int,
+    idx: size_t,
+    signame: *mut *const libc::c_char,
+    signum: *mut libc::c_int,
 ) -> libc::c_int {
     if idx
         >= (::core::mem::size_of::<[ul_signal_name; 34]>() as libc::c_ulong)

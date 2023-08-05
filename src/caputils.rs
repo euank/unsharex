@@ -74,7 +74,7 @@ pub struct __user_cap_data_struct {
     pub inheritable: __u32,
 }
 pub type cap_user_data_t = *mut __user_cap_data_struct;
-unsafe extern "C" fn test_cap(mut cap: libc::c_uint) -> libc::c_int {
+unsafe extern "C" fn test_cap(cap: libc::c_uint) -> libc::c_int {
     return (prctl(
         23 as libc::c_int,
         cap,
@@ -83,7 +83,7 @@ unsafe extern "C" fn test_cap(mut cap: libc::c_uint) -> libc::c_int {
         0 as libc::c_int,
     ) >= 0 as libc::c_int) as libc::c_int;
 }
-unsafe extern "C" fn cap_last_by_bsearch(mut ret: *mut libc::c_int) -> libc::c_int {
+unsafe extern "C" fn cap_last_by_bsearch(ret: *mut libc::c_int) -> libc::c_int {
     let mut cap: libc::c_int = 2147483647 as libc::c_int;
     let mut cap0: libc::c_uint = 0 as libc::c_int as libc::c_uint;
     let mut cap1: libc::c_uint = 2147483647 as libc::c_int as libc::c_uint;
@@ -98,8 +98,8 @@ unsafe extern "C" fn cap_last_by_bsearch(mut ret: *mut libc::c_int) -> libc::c_i
     *ret = cap;
     return 0 as libc::c_int;
 }
-unsafe extern "C" fn cap_last_by_procfs(mut ret: *mut libc::c_int) -> libc::c_int {
-    let mut f: *mut FILE = fopen(
+unsafe extern "C" fn cap_last_by_procfs(ret: *mut libc::c_int) -> libc::c_int {
+    let f: *mut FILE = fopen(
         b"/proc/sys/kernel/cap_last_cap\0" as *const u8 as *const libc::c_char,
         b"r\0" as *const u8 as *const libc::c_char,
     );
@@ -137,7 +137,7 @@ pub unsafe extern "C" fn cap_last_cap() -> libc::c_int {
 #[no_mangle]
 pub unsafe extern "C" fn cap_permitted_to_ambient() {
     let mut header: __user_cap_header_struct = {
-        let mut init = __user_cap_header_struct {
+        let init = __user_cap_header_struct {
             version: 0x20080522 as libc::c_int as __u32,
             pid: 0 as libc::c_int,
         };
@@ -145,7 +145,7 @@ pub unsafe extern "C" fn cap_permitted_to_ambient() {
     };
     let mut payload: [__user_cap_data_struct; 2] = [
         {
-            let mut init = __user_cap_data_struct {
+            let init = __user_cap_data_struct {
                 effective: 0 as libc::c_int as __u32,
                 permitted: 0,
                 inheritable: 0,

@@ -1,6 +1,6 @@
 use ::libc;
-use ::num_traits;
-use num_traits::ToPrimitive;
+
+
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -201,9 +201,9 @@ unsafe extern "C" fn tolower(mut __c: libc::c_int) -> libc::c_int {
 }
 #[inline]
 unsafe extern "C" fn xstrncpy(
-    mut dest: *mut libc::c_char,
-    mut src: *const libc::c_char,
-    mut n: size_t,
+    dest: *mut libc::c_char,
+    src: *const libc::c_char,
+    n: size_t,
 ) {
     let mut len: size_t = if !src.is_null() {
         strlen(src)
@@ -213,24 +213,24 @@ unsafe extern "C" fn xstrncpy(
     if len == 0 {
         return;
     }
-    len = ({
+    len = {
         let mut _min1: size_t = len;
         let mut _min2: libc::c_ulong = n.wrapping_sub(1 as libc::c_int as libc::c_ulong);
         &mut _min1 as *mut size_t;
         &mut _min2 as *mut libc::c_ulong;
         if _min1 < _min2 { _min1 } else { _min2 }
-    });
+    };
     memcpy(dest as *mut libc::c_void, src as *const libc::c_void, len);
     *dest.offset(len as isize) = 0 as libc::c_int as libc::c_char;
 }
 static mut STRTOXX_EXIT_CODE: libc::c_int = 1 as libc::c_int;
 #[no_mangle]
-pub unsafe extern "C" fn strutils_set_exitcode(mut ex: libc::c_int) {
+pub unsafe extern "C" fn strutils_set_exitcode(ex: libc::c_int) {
     STRTOXX_EXIT_CODE = ex;
 }
 unsafe extern "C" fn do_scale_by_power(
-    mut x: *mut uintmax_t,
-    mut base: libc::c_int,
+    x: *mut uintmax_t,
+    base: libc::c_int,
     mut power: libc::c_int,
 ) -> libc::c_int {
     loop {
@@ -251,9 +251,9 @@ unsafe extern "C" fn do_scale_by_power(
 }
 #[no_mangle]
 pub unsafe extern "C" fn parse_size(
-    mut str: *const libc::c_char,
-    mut res: *mut uintmax_t,
-    mut power: *mut libc::c_int,
+    str: *const libc::c_char,
+    res: *mut uintmax_t,
+    power: *mut libc::c_int,
 ) -> libc::c_int {
     let mut current_block: u64;
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
@@ -326,13 +326,13 @@ pub unsafe extern "C" fn parse_size(
                                 current_block = 9853141518545631134;
                                 break;
                             }
-                            let mut l: *const lconv = localeconv();
-                            let mut dp: *const libc::c_char = if !l.is_null() {
+                            let l: *const lconv = localeconv();
+                            let dp: *const libc::c_char = if !l.is_null() {
                                 (*l).decimal_point
                             } else {
                                 0 as *mut libc::c_char
                             };
-                            let mut dpsz: size_t = if !dp.is_null() {
+                            let dpsz: size_t = if !dp.is_null() {
                                 strlen(dp)
                             } else {
                                 0 as libc::c_int as libc::c_ulong
@@ -454,10 +454,10 @@ pub unsafe extern "C" fn parse_size(
                                             i;
                                         }
                                         loop {
-                                            let mut seg: libc::c_uint = frac
+                                            let seg: libc::c_uint = frac
                                                 .wrapping_rem(10 as libc::c_int as libc::c_ulong)
                                                 as libc::c_uint;
-                                            let mut seg_div: uintmax_t = frac_div
+                                            let seg_div: uintmax_t = frac_div
                                                 .wrapping_div(frac_poz);
                                             frac = (frac as libc::c_ulong)
                                                 .wrapping_div(10 as libc::c_int as libc::c_ulong)
@@ -501,15 +501,15 @@ pub unsafe extern "C" fn parse_size(
 }
 #[no_mangle]
 pub unsafe extern "C" fn strtosize(
-    mut str: *const libc::c_char,
-    mut res: *mut uintmax_t,
+    str: *const libc::c_char,
+    res: *mut uintmax_t,
 ) -> libc::c_int {
     return parse_size(str, res, 0 as *mut libc::c_int);
 }
 #[no_mangle]
 pub unsafe extern "C" fn isdigit_strend(
-    mut str: *const libc::c_char,
-    mut end: *mut *const libc::c_char,
+    str: *const libc::c_char,
+    end: *mut *const libc::c_char,
 ) -> libc::c_int {
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
     p = str;
@@ -528,8 +528,8 @@ pub unsafe extern "C" fn isdigit_strend(
 }
 #[no_mangle]
 pub unsafe extern "C" fn isxdigit_strend(
-    mut str: *const libc::c_char,
-    mut end: *mut *const libc::c_char,
+    str: *const libc::c_char,
+    end: *mut *const libc::c_char,
 ) -> libc::c_int {
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
     p = str;
@@ -548,9 +548,9 @@ pub unsafe extern "C" fn isxdigit_strend(
 }
 #[no_mangle]
 pub unsafe extern "C" fn parse_switch(
-    mut arg: *const libc::c_char,
-    mut errmesg: *const libc::c_char,
-    mut args: ...
+    arg: *const libc::c_char,
+    errmesg: *const libc::c_char,
+    args: ...
 ) -> libc::c_int {
     let mut a: *const libc::c_char = 0 as *const libc::c_char;
     let mut b: *const libc::c_char = 0 as *const libc::c_char;
@@ -583,7 +583,7 @@ pub unsafe extern "C" fn parse_switch(
 pub unsafe extern "C" fn strnchr(
     mut s: *const libc::c_char,
     mut maxlen: size_t,
-    mut c: libc::c_int,
+    c: libc::c_int,
 ) -> *mut libc::c_char {
     loop {
         let fresh1 = maxlen;
@@ -601,9 +601,9 @@ pub unsafe extern "C" fn strnchr(
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_strtos64(
-    mut str: *const libc::c_char,
-    mut num: *mut int64_t,
-    mut base: libc::c_int,
+    str: *const libc::c_char,
+    num: *mut int64_t,
+    base: libc::c_int,
 ) -> libc::c_int {
     let mut end: *mut libc::c_char = 0 as *mut libc::c_char;
     if str.is_null() || *str as libc::c_int == '\0' as i32 {
@@ -625,9 +625,9 @@ pub unsafe extern "C" fn ul_strtos64(
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_strtou64(
-    mut str: *const libc::c_char,
-    mut num: *mut uint64_t,
-    mut base: libc::c_int,
+    str: *const libc::c_char,
+    num: *mut uint64_t,
+    base: libc::c_int,
 ) -> libc::c_int {
     let mut end: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut tmp: int64_t = 0;
@@ -656,9 +656,9 @@ pub unsafe extern "C" fn ul_strtou64(
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_strtos32(
-    mut str: *const libc::c_char,
-    mut num: *mut int32_t,
-    mut base: libc::c_int,
+    str: *const libc::c_char,
+    num: *mut int32_t,
+    base: libc::c_int,
 ) -> libc::c_int {
     let mut tmp: int64_t = 0;
     let mut rc: libc::c_int = 0;
@@ -678,9 +678,9 @@ pub unsafe extern "C" fn ul_strtos32(
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_strtou32(
-    mut str: *const libc::c_char,
-    mut num: *mut uint32_t,
-    mut base: libc::c_int,
+    str: *const libc::c_char,
+    num: *mut uint32_t,
+    base: libc::c_int,
 ) -> libc::c_int {
     let mut tmp: uint64_t = 0;
     let mut rc: libc::c_int = 0;
@@ -697,11 +697,11 @@ pub unsafe extern "C" fn ul_strtou32(
 }
 #[no_mangle]
 pub unsafe extern "C" fn str2num_or_err(
-    mut str: *const libc::c_char,
-    mut base: libc::c_int,
-    mut errmesg: *const libc::c_char,
-    mut low: int64_t,
-    mut up: int64_t,
+    str: *const libc::c_char,
+    base: libc::c_int,
+    errmesg: *const libc::c_char,
+    low: int64_t,
+    up: int64_t,
 ) -> int64_t {
     let mut num: int64_t = 0 as libc::c_int as int64_t;
     let mut rc: libc::c_int = 0;
@@ -731,10 +731,10 @@ pub unsafe extern "C" fn str2num_or_err(
 }
 #[no_mangle]
 pub unsafe extern "C" fn str2unum_or_err(
-    mut str: *const libc::c_char,
-    mut base: libc::c_int,
-    mut errmesg: *const libc::c_char,
-    mut up: uint64_t,
+    str: *const libc::c_char,
+    base: libc::c_int,
+    errmesg: *const libc::c_char,
+    up: uint64_t,
 ) -> uint64_t {
     let mut num: uint64_t = 0 as libc::c_int as uint64_t;
     let mut rc: libc::c_int = 0;
@@ -764,8 +764,8 @@ pub unsafe extern "C" fn str2unum_or_err(
 }
 #[no_mangle]
 pub unsafe extern "C" fn strtod_or_err(
-    mut str: *const libc::c_char,
-    mut errmesg: *const libc::c_char,
+    str: *const libc::c_char,
+    errmesg: *const libc::c_char,
 ) -> libc::c_double {
     let mut num: libc::c_double = 0.;
     let mut end: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -795,8 +795,8 @@ pub unsafe extern "C" fn strtod_or_err(
 }
 #[no_mangle]
 pub unsafe extern "C" fn strtosize_or_err(
-    mut str: *const libc::c_char,
-    mut errmesg: *const libc::c_char,
+    str: *const libc::c_char,
+    errmesg: *const libc::c_char,
 ) -> uintmax_t {
     let mut num: uintmax_t = 0;
     if strtosize(str, &mut num) == 0 as libc::c_int {
@@ -819,8 +819,8 @@ pub unsafe extern "C" fn strtosize_or_err(
 }
 #[no_mangle]
 pub unsafe extern "C" fn strtotime_or_err(
-    mut str: *const libc::c_char,
-    mut errmesg: *const libc::c_char,
+    str: *const libc::c_char,
+    errmesg: *const libc::c_char,
 ) -> time_t {
     let mut user_input: int64_t = 0;
     user_input = str2num_or_err(
@@ -834,8 +834,8 @@ pub unsafe extern "C" fn strtotime_or_err(
 }
 #[no_mangle]
 pub unsafe extern "C" fn xstrmode(
-    mut mode: mode_t,
-    mut str: *mut libc::c_char,
+    mode: mode_t,
+    str: *mut libc::c_char,
 ) -> *mut libc::c_char {
     let mut i: libc::c_ushort = 0 as libc::c_int as libc::c_ushort;
     if mode & 0o170000 as libc::c_int as libc::c_uint
@@ -1004,7 +1004,7 @@ pub unsafe extern "C" fn xstrmode(
     *str.offset(i as isize) = '\0' as i32 as libc::c_char;
     return str;
 }
-unsafe extern "C" fn get_exp(mut n: uint64_t) -> libc::c_int {
+unsafe extern "C" fn get_exp(n: uint64_t) -> libc::c_int {
     let mut shft: libc::c_int = 0;
     shft = 10 as libc::c_int;
     while shft <= 60 as libc::c_int {
@@ -1017,14 +1017,14 @@ unsafe extern "C" fn get_exp(mut n: uint64_t) -> libc::c_int {
 }
 #[no_mangle]
 pub unsafe extern "C" fn size_to_human_string(
-    mut options: libc::c_int,
-    mut bytes: uint64_t,
+    options: libc::c_int,
+    bytes: uint64_t,
 ) -> *mut libc::c_char {
     let mut buf: [libc::c_char; 32] = [0; 32];
     let mut dec: libc::c_int = 0;
     let mut exp: libc::c_int = 0;
     let mut frac: uint64_t = 0;
-    let mut letters: *const libc::c_char = b"BKMGTPE\0" as *const u8
+    let letters: *const libc::c_char = b"BKMGTPE\0" as *const u8
         as *const libc::c_char;
     let mut suffix: [libc::c_char; 5] = [0; 5];
     let mut psuf: *mut libc::c_char = suffix.as_mut_ptr();
@@ -1095,7 +1095,7 @@ pub unsafe extern "C" fn size_to_human_string(
         }
     }
     if frac != 0 {
-        let mut l: *const lconv = localeconv();
+        let l: *const lconv = localeconv();
         let mut dp: *mut libc::c_char = if !l.is_null() {
             (*l).decimal_point
         } else {
@@ -1144,10 +1144,10 @@ pub unsafe extern "C" fn size_to_human_string(
 }
 #[no_mangle]
 pub unsafe extern "C" fn string_to_idarray(
-    mut list: *const libc::c_char,
-    mut ary: *mut libc::c_int,
-    mut arysz: size_t,
-    mut name2id: Option::<
+    list: *const libc::c_char,
+    ary: *mut libc::c_int,
+    arysz: size_t,
+    name2id: Option::<
         unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int,
     >,
 ) -> libc::c_int {
@@ -1199,11 +1199,11 @@ pub unsafe extern "C" fn string_to_idarray(
 }
 #[no_mangle]
 pub unsafe extern "C" fn string_add_to_idarray(
-    mut list: *const libc::c_char,
-    mut ary: *mut libc::c_int,
-    mut arysz: size_t,
-    mut ary_pos: *mut size_t,
-    mut name2id: Option::<
+    list: *const libc::c_char,
+    ary: *mut libc::c_int,
+    arysz: size_t,
+    ary_pos: *mut size_t,
+    name2id: Option::<
         unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int,
     >,
 ) -> libc::c_int {
@@ -1232,12 +1232,12 @@ pub unsafe extern "C" fn string_add_to_idarray(
 }
 #[no_mangle]
 pub unsafe extern "C" fn string_to_bitarray(
-    mut list: *const libc::c_char,
-    mut ary: *mut libc::c_char,
-    mut name2bit: Option::<
+    list: *const libc::c_char,
+    ary: *mut libc::c_char,
+    name2bit: Option::<
         unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int,
     >,
-    mut allow_range: size_t,
+    allow_range: size_t,
 ) -> libc::c_int {
     let mut begin: *const libc::c_char = 0 as *const libc::c_char;
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
@@ -1318,9 +1318,9 @@ pub unsafe extern "C" fn string_to_bitarray(
 }
 #[no_mangle]
 pub unsafe extern "C" fn string_to_bitmask(
-    mut list: *const libc::c_char,
-    mut mask: *mut libc::c_ulong,
-    mut name2flag: Option::<
+    list: *const libc::c_char,
+    mask: *mut libc::c_ulong,
+    name2flag: Option::<
         unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_long,
     >,
 ) -> libc::c_int {
@@ -1367,9 +1367,9 @@ pub unsafe extern "C" fn string_to_bitmask(
 #[no_mangle]
 pub unsafe extern "C" fn parse_range(
     mut str: *const libc::c_char,
-    mut lower: *mut libc::c_int,
-    mut upper: *mut libc::c_int,
-    mut def: libc::c_int,
+    lower: *mut libc::c_int,
+    upper: *mut libc::c_int,
+    def: libc::c_int,
 ) -> libc::c_int {
     let mut end: *mut libc::c_char = 0 as *mut libc::c_char;
     if str.is_null() {
@@ -1413,8 +1413,8 @@ pub unsafe extern "C" fn parse_range(
     return 0 as libc::c_int;
 }
 unsafe extern "C" fn next_path_segment(
-    mut str: *const libc::c_char,
-    mut sz: *mut size_t,
+    str: *const libc::c_char,
+    sz: *mut size_t,
 ) -> *const libc::c_char {
     let mut start: *const libc::c_char = 0 as *const libc::c_char;
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
@@ -1447,8 +1447,8 @@ pub unsafe extern "C" fn streq_paths(
     while !a.is_null() && !b.is_null() {
         let mut a_sz: size_t = 0;
         let mut b_sz: size_t = 0;
-        let mut a_seg: *const libc::c_char = next_path_segment(a, &mut a_sz);
-        let mut b_seg: *const libc::c_char = next_path_segment(b, &mut b_sz);
+        let a_seg: *const libc::c_char = next_path_segment(a, &mut a_sz);
+        let b_seg: *const libc::c_char = next_path_segment(b, &mut b_sz);
         if a_sz.wrapping_add(b_sz) == 0 as libc::c_int as libc::c_ulong {
             return 1 as libc::c_int;
         }
@@ -1471,9 +1471,9 @@ pub unsafe extern "C" fn streq_paths(
 }
 #[no_mangle]
 pub unsafe extern "C" fn strnconcat(
-    mut s: *const libc::c_char,
-    mut suffix: *const libc::c_char,
-    mut b: size_t,
+    s: *const libc::c_char,
+    suffix: *const libc::c_char,
+    b: size_t,
 ) -> *mut libc::c_char {
     let mut a: size_t = 0;
     let mut r: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -1554,8 +1554,8 @@ pub unsafe extern "C" fn strnconcat(
 }
 #[no_mangle]
 pub unsafe extern "C" fn strconcat(
-    mut s: *const libc::c_char,
-    mut suffix: *const libc::c_char,
+    s: *const libc::c_char,
+    suffix: *const libc::c_char,
 ) -> *mut libc::c_char {
     return strnconcat(
         s,
@@ -1569,9 +1569,9 @@ pub unsafe extern "C" fn strconcat(
 }
 #[no_mangle]
 pub unsafe extern "C" fn strfconcat(
-    mut s: *const libc::c_char,
-    mut format: *const libc::c_char,
-    mut args: ...
+    s: *const libc::c_char,
+    format: *const libc::c_char,
+    args: ...
 ) -> *mut libc::c_char {
     let mut ap: ::core::ffi::VaListImpl;
     let mut val: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -1588,8 +1588,8 @@ pub unsafe extern "C" fn strfconcat(
 }
 #[no_mangle]
 pub unsafe extern "C" fn strappend(
-    mut a: *mut *mut libc::c_char,
-    mut b: *const libc::c_char,
+    a: *mut *mut libc::c_char,
+    b: *const libc::c_char,
 ) -> libc::c_int {
     let mut al: size_t = 0;
     let mut bl: size_t = 0;
@@ -1622,8 +1622,8 @@ pub unsafe extern "C" fn strappend(
     return 0 as libc::c_int;
 }
 unsafe extern "C" fn strcspn_escaped(
-    mut s: *const libc::c_char,
-    mut reject: *const libc::c_char,
+    s: *const libc::c_char,
+    reject: *const libc::c_char,
 ) -> size_t {
     let mut escaped: libc::c_int = 0 as libc::c_int;
     let mut n: libc::c_int = 0;
@@ -1643,8 +1643,8 @@ unsafe extern "C" fn strcspn_escaped(
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_strchr_escaped(
-    mut s: *const libc::c_char,
-    mut c: libc::c_int,
+    s: *const libc::c_char,
+    c: libc::c_int,
 ) -> *mut libc::c_char {
     let mut p: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut esc: libc::c_int = 0 as libc::c_int;
@@ -1665,10 +1665,10 @@ pub unsafe extern "C" fn ul_strchr_escaped(
 }
 #[no_mangle]
 pub unsafe extern "C" fn split(
-    mut state: *mut *const libc::c_char,
-    mut l: *mut size_t,
-    mut separator: *const libc::c_char,
-    mut quoted: libc::c_int,
+    state: *mut *const libc::c_char,
+    l: *mut size_t,
+    separator: *const libc::c_char,
+    quoted: libc::c_int,
 ) -> *const libc::c_char {
     let mut current: *const libc::c_char = 0 as *const libc::c_char;
     current = *state;
@@ -1759,7 +1759,7 @@ pub unsafe extern "C" fn split(
     return current;
 }
 #[no_mangle]
-pub unsafe extern "C" fn skip_fline(mut fp: *mut FILE) -> libc::c_int {
+pub unsafe extern "C" fn skip_fline(fp: *mut FILE) -> libc::c_int {
     let mut ch: libc::c_int = 0;
     loop {
         ch = fgetc(fp);
@@ -1773,8 +1773,8 @@ pub unsafe extern "C" fn skip_fline(mut fp: *mut FILE) -> libc::c_int {
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_stralnumcmp(
-    mut p1: *const libc::c_char,
-    mut p2: *const libc::c_char,
+    p1: *const libc::c_char,
+    p2: *const libc::c_char,
 ) -> libc::c_int {
     let mut s1: *const libc::c_uchar = p1 as *const libc::c_uchar;
     let mut s2: *const libc::c_uchar = p2 as *const libc::c_uchar;
@@ -1864,11 +1864,11 @@ pub unsafe extern "C" fn ul_stralnumcmp(
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_optstr_next(
-    mut optstr: *mut *mut libc::c_char,
-    mut name: *mut *mut libc::c_char,
-    mut namesz: *mut size_t,
-    mut value: *mut *mut libc::c_char,
-    mut valsz: *mut size_t,
+    optstr: *mut *mut libc::c_char,
+    name: *mut *mut libc::c_char,
+    namesz: *mut size_t,
+    value: *mut *mut libc::c_char,
+    valsz: *mut size_t,
 ) -> libc::c_int {
     let mut open_quote: libc::c_int = 0 as libc::c_int;
     let mut start: *mut libc::c_char = 0 as *mut libc::c_char;

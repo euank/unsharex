@@ -387,9 +387,9 @@ unsafe extern "C" fn getline(
     return __getdelim(__lineptr, __n, '\n' as i32, __stream);
 }
 #[inline]
-unsafe extern "C" fn xusleep(mut usec: useconds_t) -> libc::c_int {
+unsafe extern "C" fn xusleep(usec: useconds_t) -> libc::c_int {
     let mut waittime: timespec = {
-        let mut init = timespec {
+        let init = timespec {
             tv_sec: usec as libc::c_long / 1000000 as libc::c_long,
             tv_nsec: usec as libc::c_long % 1000000 as libc::c_long
                 * 1000 as libc::c_int as libc::c_long,
@@ -399,7 +399,7 @@ unsafe extern "C" fn xusleep(mut usec: useconds_t) -> libc::c_int {
     return nanosleep(&mut waittime, 0 as *mut timespec);
 }
 #[inline]
-unsafe extern "C" fn flush_standard_stream(mut stream: *mut FILE) -> libc::c_int {
+unsafe extern "C" fn flush_standard_stream(stream: *mut FILE) -> libc::c_int {
     let mut fd: libc::c_int = 0;
     *__errno_location() = 0 as libc::c_int;
     if !(ferror(stream) != 0 as libc::c_int || fflush(stream) != 0 as libc::c_int) {
@@ -452,12 +452,12 @@ unsafe extern "C" fn close_stdout_atexit() {
     atexit(Some(close_stdout as unsafe extern "C" fn() -> ()));
 }
 #[inline]
-unsafe extern "C" fn pidfd_open(mut pid: pid_t, mut flags: libc::c_uint) -> libc::c_int {
+unsafe extern "C" fn pidfd_open(pid: pid_t, flags: libc::c_uint) -> libc::c_int {
     return syscall(434 as libc::c_int as libc::c_long, pid, flags) as libc::c_int;
 }
 #[inline]
 unsafe extern "C" fn xmalloc(size: size_t) -> *mut libc::c_void {
-    let mut ret: *mut libc::c_void = malloc(size);
+    let ret: *mut libc::c_void = malloc(size);
     if ret.is_null() && size != 0 {
         err(
             1 as libc::c_int,
@@ -468,7 +468,7 @@ unsafe extern "C" fn xmalloc(size: size_t) -> *mut libc::c_void {
     return ret;
 }
 #[inline]
-unsafe extern "C" fn xstrdup(mut str: *const libc::c_char) -> *mut libc::c_char {
+unsafe extern "C" fn xstrdup(str: *const libc::c_char) -> *mut libc::c_char {
     let mut ret: *mut libc::c_char = 0 as *mut libc::c_char;
     if !str.is_null() {} else {
         __assert_fail(
@@ -507,9 +507,9 @@ unsafe extern "C" fn xstrdup(mut str: *const libc::c_char) -> *mut libc::c_char 
 }
 #[inline]
 unsafe extern "C" fn xasprintf(
-    mut strp: *mut *mut libc::c_char,
-    mut fmt: *const libc::c_char,
-    mut args: ...
+    strp: *mut *mut libc::c_char,
+    fmt: *const libc::c_char,
+    args: ...
 ) -> libc::c_int {
     let mut ret: libc::c_int = 0;
     let mut args_0: ::core::ffi::VaListImpl;
@@ -525,7 +525,7 @@ unsafe extern "C" fn xasprintf(
 }
 #[inline]
 unsafe extern "C" fn write_all(
-    mut fd: libc::c_int,
+    fd: libc::c_int,
     mut buf: *const libc::c_void,
     mut count: size_t,
 ) -> libc::c_int {
@@ -553,7 +553,7 @@ unsafe extern "C" fn write_all(
 }
 #[inline]
 unsafe extern "C" fn read_all(
-    mut fd: libc::c_int,
+    fd: libc::c_int,
     mut buf: *mut libc::c_char,
     mut count: size_t,
 ) -> ssize_t {
@@ -591,7 +591,7 @@ unsafe extern "C" fn read_all(
 }
 static mut namespace_files: [namespace_file; 9] = [
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0x10000000 as libc::c_int,
             name: b"ns/user\0" as *const u8 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -599,7 +599,7 @@ static mut namespace_files: [namespace_file; 9] = [
         init
     },
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0x2000000 as libc::c_int,
             name: b"ns/cgroup\0" as *const u8 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -607,7 +607,7 @@ static mut namespace_files: [namespace_file; 9] = [
         init
     },
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0x8000000 as libc::c_int,
             name: b"ns/ipc\0" as *const u8 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -615,7 +615,7 @@ static mut namespace_files: [namespace_file; 9] = [
         init
     },
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0x4000000 as libc::c_int,
             name: b"ns/uts\0" as *const u8 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -623,7 +623,7 @@ static mut namespace_files: [namespace_file; 9] = [
         init
     },
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0x40000000 as libc::c_int,
             name: b"ns/net\0" as *const u8 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -631,7 +631,7 @@ static mut namespace_files: [namespace_file; 9] = [
         init
     },
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0x20000000 as libc::c_int,
             name: b"ns/pid_for_children\0" as *const u8 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -639,7 +639,7 @@ static mut namespace_files: [namespace_file; 9] = [
         init
     },
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0x20000 as libc::c_int,
             name: b"ns/mnt\0" as *const u8 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -647,7 +647,7 @@ static mut namespace_files: [namespace_file; 9] = [
         init
     },
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0x80 as libc::c_int,
             name: b"ns/time_for_children\0" as *const u8 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -655,7 +655,7 @@ static mut namespace_files: [namespace_file; 9] = [
         init
     },
     {
-        let mut init = namespace_file {
+        let init = namespace_file {
             type_0: 0,
             name: 0 as *const libc::c_char,
             target: 0 as *const libc::c_char,
@@ -668,7 +668,7 @@ static mut setgroups_strings: [*const libc::c_char; 2] = [
     b"deny\0" as *const u8 as *const libc::c_char,
     b"allow\0" as *const u8 as *const libc::c_char,
 ];
-unsafe extern "C" fn setgroups_str2id(mut str: *const libc::c_char) -> libc::c_int {
+unsafe extern "C" fn setgroups_str2id(str: *const libc::c_char) -> libc::c_int {
     let mut i: size_t = 0;
     i = 0 as libc::c_int as size_t;
     while i
@@ -693,8 +693,8 @@ unsafe extern "C" fn setgroups_str2id(mut str: *const libc::c_char) -> libc::c_i
         str,
     );
 }
-unsafe extern "C" fn setgroups_control(mut action: libc::c_int) {
-    let mut file: *const libc::c_char = b"/proc/self/setgroups\0" as *const u8
+unsafe extern "C" fn setgroups_control(action: libc::c_int) {
+    let file: *const libc::c_char = b"/proc/self/setgroups\0" as *const u8
         as *const libc::c_char;
     let mut cmd: *const libc::c_char = 0 as *const libc::c_char;
     let mut fd: libc::c_int = 0;
@@ -738,9 +738,9 @@ unsafe extern "C" fn setgroups_control(mut action: libc::c_int) {
     close(fd);
 }
 unsafe extern "C" fn map_id(
-    mut file: *const libc::c_char,
-    mut from: uint32_t,
-    mut to: uint32_t,
+    file: *const libc::c_char,
+    from: uint32_t,
+    to: uint32_t,
 ) {
     let mut buf: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut fd: libc::c_int = 0;
@@ -776,18 +776,18 @@ unsafe extern "C" fn map_id(
     free(buf as *mut libc::c_void);
     close(fd);
 }
-unsafe extern "C" fn parse_propagation(mut str: *const libc::c_char) -> libc::c_ulong {
+unsafe extern "C" fn parse_propagation(str: *const libc::c_char) -> libc::c_ulong {
     let mut i: size_t = 0;
     static mut opts: [prop_opts; 4] = [
         {
-            let mut init = prop_opts {
+            let init = prop_opts {
                 name: b"slave\0" as *const u8 as *const libc::c_char,
                 flag: (MS_REC as libc::c_int | MS_SLAVE as libc::c_int) as libc::c_ulong,
             };
             init
         },
         {
-            let mut init = prop_opts {
+            let init = prop_opts {
                 name: b"private\0" as *const u8 as *const libc::c_char,
                 flag: (MS_REC as libc::c_int | MS_PRIVATE as libc::c_int)
                     as libc::c_ulong,
@@ -795,14 +795,14 @@ unsafe extern "C" fn parse_propagation(mut str: *const libc::c_char) -> libc::c_
             init
         },
         {
-            let mut init = prop_opts {
+            let init = prop_opts {
                 name: b"shared\0" as *const u8 as *const libc::c_char,
                 flag: (MS_REC as libc::c_int | MS_SHARED as libc::c_int) as libc::c_ulong,
             };
             init
         },
         {
-            let mut init = prop_opts {
+            let init = prop_opts {
                 name: b"unchanged\0" as *const u8 as *const libc::c_char,
                 flag: 0 as libc::c_int as libc::c_ulong,
             };
@@ -831,7 +831,7 @@ unsafe extern "C" fn parse_propagation(mut str: *const libc::c_char) -> libc::c_
         str,
     );
 }
-unsafe extern "C" fn set_propagation(mut flags: libc::c_ulong) {
+unsafe extern "C" fn set_propagation(flags: libc::c_ulong) {
     if flags == 0 as libc::c_int as libc::c_ulong {
         return;
     }
@@ -855,8 +855,8 @@ unsafe extern "C" fn set_propagation(mut flags: libc::c_ulong) {
     }
 }
 unsafe extern "C" fn set_ns_target(
-    mut type_0: libc::c_int,
-    mut path: *const libc::c_char,
+    type_0: libc::c_int,
+    path: *const libc::c_char,
 ) -> libc::c_int {
     let mut ns: *mut namespace_file = 0 as *mut namespace_file;
     ns = namespace_files.as_mut_ptr();
@@ -873,7 +873,7 @@ unsafe extern "C" fn set_ns_target(
     }
     return -(22 as libc::c_int);
 }
-unsafe extern "C" fn bind_ns_files(mut pid: pid_t) -> libc::c_int {
+unsafe extern "C" fn bind_ns_files(pid: pid_t) -> libc::c_int {
     let mut ns: *mut namespace_file = 0 as *mut namespace_file;
     let mut src: [libc::c_char; 4096] = [0; 4096];
     ns = namespace_files.as_mut_ptr();
@@ -911,7 +911,7 @@ unsafe extern "C" fn bind_ns_files(mut pid: pid_t) -> libc::c_int {
     }
     return 0 as libc::c_int;
 }
-unsafe extern "C" fn get_mnt_ino(mut pid: pid_t) -> ino_t {
+unsafe extern "C" fn get_mnt_ino(pid: pid_t) -> ino_t {
     let mut st: stat = stat {
         st_dev: 0,
         st_ino: 0,
@@ -949,7 +949,7 @@ unsafe extern "C" fn get_mnt_ino(mut pid: pid_t) -> ino_t {
     }
     return st.st_ino;
 }
-unsafe extern "C" fn settime(mut offset: int64_t, mut clk_id: clockid_t) {
+unsafe extern "C" fn settime(offset: int64_t, clk_id: clockid_t) {
     let mut buf: [libc::c_char; 96] = [0; 96];
     let mut fd: libc::c_int = 0;
     let mut len: libc::c_int = 0;
@@ -990,7 +990,7 @@ unsafe extern "C" fn settime(mut offset: int64_t, mut clk_id: clockid_t) {
     }
     close(fd);
 }
-unsafe extern "C" fn waitchild(mut pid: libc::c_int) {
+unsafe extern "C" fn waitchild(pid: libc::c_int) {
     let mut rc: libc::c_int = 0;
     let mut status: libc::c_int = 0;
     loop {
@@ -1016,7 +1016,7 @@ unsafe extern "C" fn waitchild(mut pid: libc::c_int) {
         }
     };
 }
-unsafe extern "C" fn sync_with_child(mut pid: pid_t, mut fd: libc::c_int) {
+unsafe extern "C" fn sync_with_child(pid: pid_t, fd: libc::c_int) {
     let mut ch: uint64_t = 0x6 as libc::c_int as uint64_t;
     write_all(
         fd,
@@ -1026,7 +1026,7 @@ unsafe extern "C" fn sync_with_child(mut pid: pid_t, mut fd: libc::c_int) {
     close(fd);
     waitchild(pid);
 }
-unsafe extern "C" fn fork_and_wait(mut fd: *mut libc::c_int) -> pid_t {
+unsafe extern "C" fn fork_and_wait(fd: *mut libc::c_int) -> pid_t {
     let mut pid: pid_t = 0;
     let mut ch: uint64_t = 0;
     *fd = eventfd(0 as libc::c_int as libc::c_uint, 0 as libc::c_int);
@@ -1072,10 +1072,10 @@ unsafe extern "C" fn fork_and_wait(mut fd: *mut libc::c_int) -> pid_t {
     }
     return pid;
 }
-unsafe extern "C" fn bind_ns_files_from_child(mut fd: *mut libc::c_int) -> pid_t {
+unsafe extern "C" fn bind_ns_files_from_child(fd: *mut libc::c_int) -> pid_t {
     let mut child: pid_t = 0;
-    let mut ppid: pid_t = getpid();
-    let mut ino: ino_t = get_mnt_ino(ppid);
+    let ppid: pid_t = getpid();
+    let ino: ino_t = get_mnt_ino(ppid);
     child = fork_and_wait(fd);
     if child != 0 {
         return child;
@@ -1087,8 +1087,8 @@ unsafe extern "C" fn bind_ns_files_from_child(mut fd: *mut libc::c_int) -> pid_t
     exit(0 as libc::c_int);
 }
 unsafe extern "C" fn get_user(
-    mut s: *const libc::c_char,
-    mut err_0: *const libc::c_char,
+    s: *const libc::c_char,
+    err_0: *const libc::c_char,
 ) -> uid_t {
     let mut pw: *mut passwd = 0 as *mut passwd;
     let mut buf: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -1111,8 +1111,8 @@ unsafe extern "C" fn get_user(
     return ret;
 }
 unsafe extern "C" fn get_group(
-    mut s: *const libc::c_char,
-    mut err_0: *const libc::c_char,
+    s: *const libc::c_char,
+    err_0: *const libc::c_char,
 ) -> gid_t {
     let mut gr: *mut group = 0 as *mut group;
     let mut buf: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -1134,7 +1134,7 @@ unsafe extern "C" fn get_group(
     }
     return ret;
 }
-unsafe extern "C" fn get_map_range(mut s: *const libc::c_char) -> *mut map_range {
+unsafe extern "C" fn get_map_range(s: *const libc::c_char) -> *mut map_range {
     let mut end: libc::c_int = 0;
     let mut ret: *mut map_range = 0 as *mut map_range;
     ret = xmalloc(::core::mem::size_of::<map_range>() as libc::c_ulong)
@@ -1172,8 +1172,8 @@ unsafe extern "C" fn get_map_range(mut s: *const libc::c_char) -> *mut map_range
     );
 }
 unsafe extern "C" fn read_subid_range(
-    mut filename: *mut libc::c_char,
-    mut uid: uid_t,
+    filename: *mut libc::c_char,
+    uid: uid_t,
 ) -> *mut map_range {
     let mut line: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut pwbuf: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -1276,11 +1276,11 @@ unsafe extern "C" fn read_subid_range(
     );
 }
 unsafe extern "C" fn map_ids(
-    mut idmapper: *const libc::c_char,
-    mut ppid: libc::c_int,
-    mut outer: libc::c_uint,
-    mut inner: libc::c_uint,
-    mut map: *mut map_range,
+    idmapper: *const libc::c_char,
+    ppid: libc::c_int,
+    outer: libc::c_uint,
+    inner: libc::c_uint,
+    map: *mut map_range,
 ) -> ! {
     let mut argv: [*mut libc::c_char; 15] = [0 as *mut libc::c_char; 15];
     let mut args: [[libc::c_char; 32]; 12] = [[0; 32]; 12];
@@ -1383,7 +1383,7 @@ unsafe extern "C" fn map_ids(
         (*map).count = ((*map).count).wrapping_sub(1);
         (*map).count;
     }
-    outer_offset = ({
+    outer_offset = {
         let mut _min1: libc::c_uint = if outer > (*map).outer {
             outer.wrapping_sub((*map).outer)
         } else {
@@ -1393,8 +1393,8 @@ unsafe extern "C" fn map_ids(
         &mut _min1 as *mut libc::c_uint;
         &mut _min2 as *mut libc::c_uint;
         if _min1 < _min2 { _min1 } else { _min2 }
-    });
-    inner_offset = ({
+    };
+    inner_offset = {
         let mut _min1: libc::c_uint = if inner > (*map).inner {
             inner.wrapping_sub((*map).inner)
         } else {
@@ -1404,17 +1404,17 @@ unsafe extern "C" fn map_ids(
         &mut _min1 as *mut libc::c_uint;
         &mut _min2 as *mut libc::c_uint;
         if _min1 < _min2 { _min1 } else { _min2 }
-    });
+    };
     lo.outer = (*map).outer;
     lo.inner = (*map).inner;
     lo
-        .count = ({
+        .count = {
         let mut _min1: libc::c_uint = inner_offset;
         let mut _min2: libc::c_uint = outer_offset;
         &mut _min1 as *mut libc::c_uint;
         &mut _min2 as *mut libc::c_uint;
         if _min1 < _min2 { _min1 } else { _min2 }
-    });
+    };
     mid.outer = (lo.outer).wrapping_add(lo.count);
     mid
         .outer = (mid.outer)
@@ -1424,13 +1424,13 @@ unsafe extern "C" fn map_ids(
         .inner = (mid.inner)
         .wrapping_add((mid.inner == inner) as libc::c_int as libc::c_uint);
     mid
-        .count = ({
+        .count = {
         let mut _a: libc::c_uint = outer_offset;
         let mut _b: libc::c_uint = inner_offset;
         &mut _a as *mut libc::c_uint;
         &mut _b as *mut libc::c_uint;
         if _a > _b { _a.wrapping_sub(_b) } else { _b.wrapping_sub(_a) }
-    });
+    };
     hi.outer = (mid.outer).wrapping_add(mid.count);
     hi
         .outer = (hi.outer)
@@ -1590,15 +1590,15 @@ unsafe extern "C" fn map_ids(
     );
 }
 unsafe extern "C" fn map_ids_from_child(
-    mut fd: *mut libc::c_int,
-    mut mapuser: uid_t,
-    mut usermap: *mut map_range,
-    mut mapgroup: gid_t,
-    mut groupmap: *mut map_range,
+    fd: *mut libc::c_int,
+    mapuser: uid_t,
+    usermap: *mut map_range,
+    mapgroup: gid_t,
+    groupmap: *mut map_range,
 ) -> pid_t {
     let mut child: pid_t = 0;
     let mut pid: pid_t = 0 as libc::c_int;
-    let mut ppid: pid_t = getpid();
+    let ppid: pid_t = getpid();
     child = fork_and_wait(fd);
     if child != 0 {
         return child;
@@ -1640,7 +1640,7 @@ unsafe extern "C" fn map_ids_from_child(
     exit(0 as libc::c_int);
 }
 unsafe extern "C" fn usage() -> ! {
-    let mut out: *mut FILE = stdout;
+    let out: *mut FILE = stdout;
     fputs(
         dcgettext(
             0 as *const libc::c_char,
@@ -1950,12 +1950,12 @@ unsafe extern "C" fn usage() -> ! {
     exit(0 as libc::c_int);
 }
 unsafe fn main_0(
-    mut argc: libc::c_int,
-    mut argv: *mut *mut libc::c_char,
+    argc: libc::c_int,
+    argv: *mut *mut libc::c_char,
 ) -> libc::c_int {
     static mut longopts: [option; 30] = [
         {
-            let mut init = option {
+            let init = option {
                 name: b"help\0" as *const u8 as *const libc::c_char,
                 has_arg: 0 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -1964,7 +1964,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"version\0" as *const u8 as *const libc::c_char,
                 has_arg: 0 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -1973,7 +1973,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"mount\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -1982,7 +1982,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"uts\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -1991,7 +1991,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"ipc\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2000,7 +2000,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"net\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2009,7 +2009,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"pid\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2018,7 +2018,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"user\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2027,7 +2027,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"cgroup\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2036,7 +2036,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"time\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2045,7 +2045,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"fork\0" as *const u8 as *const libc::c_char,
                 has_arg: 0 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2054,7 +2054,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"kill-child\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2063,7 +2063,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"mount-proc\0" as *const u8 as *const libc::c_char,
                 has_arg: 2 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2072,7 +2072,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"map-user\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2081,7 +2081,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"map-users\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2090,7 +2090,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"map-group\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2099,7 +2099,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"map-groups\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2108,7 +2108,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"map-root-user\0" as *const u8 as *const libc::c_char,
                 has_arg: 0 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2117,7 +2117,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"map-current-user\0" as *const u8 as *const libc::c_char,
                 has_arg: 0 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2126,7 +2126,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"map-auto\0" as *const u8 as *const libc::c_char,
                 has_arg: 0 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2135,7 +2135,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"propagation\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2144,7 +2144,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"setgroups\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2153,7 +2153,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"keep-caps\0" as *const u8 as *const libc::c_char,
                 has_arg: 0 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2162,7 +2162,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"setuid\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2171,7 +2171,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"setgid\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2180,7 +2180,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"root\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2189,7 +2189,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"wd\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2198,7 +2198,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"monotonic\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2207,7 +2207,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: b"boottime\0" as *const u8 as *const libc::c_char,
                 has_arg: 1 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2216,7 +2216,7 @@ unsafe fn main_0(
             init
         },
         {
-            let mut init = option {
+            let init = option {
                 name: 0 as *const libc::c_char,
                 has_arg: 0 as libc::c_int,
                 flag: 0 as *const libc::c_int as *mut libc::c_int,
@@ -2251,9 +2251,9 @@ unsafe fn main_0(
     let mut force_uid: libc::c_int = 0 as libc::c_int;
     let mut force_gid: libc::c_int = 0 as libc::c_int;
     let mut uid: uid_t = 0 as libc::c_int as uid_t;
-    let mut real_euid: uid_t = geteuid();
+    let real_euid: uid_t = geteuid();
     let mut gid: gid_t = 0 as libc::c_int as gid_t;
-    let mut real_egid: gid_t = getegid();
+    let real_egid: gid_t = getegid();
     let mut keepcaps: libc::c_int = 0 as libc::c_int;
     let mut monotonic: int64_t = 0 as libc::c_int as int64_t;
     let mut boottime: int64_t = 0 as libc::c_int as int64_t;
@@ -2661,7 +2661,7 @@ unsafe fn main_0(
         if ((status & 0x7f as libc::c_int) + 1 as libc::c_int) as libc::c_schar
             as libc::c_int >> 1 as libc::c_int > 0 as libc::c_int
         {
-            let mut termsig: libc::c_int = status & 0x7f as libc::c_int;
+            let termsig: libc::c_int = status & 0x7f as libc::c_int;
             if signal(termsig, None)
                 == ::core::mem::transmute::<
                     libc::intptr_t,
@@ -2700,7 +2700,7 @@ unsafe fn main_0(
         if fd_parent_pid != -(1 as libc::c_int) {
             let mut pollfds: [pollfd; 1] = [
                 {
-                    let mut init = pollfd {
+                    let init = pollfd {
                         fd: fd_parent_pid,
                         events: 0x1 as libc::c_int as libc::c_short,
                         revents: 0,
@@ -2708,7 +2708,7 @@ unsafe fn main_0(
                     init
                 },
             ];
-            let mut nfds: libc::c_int = poll(
+            let nfds: libc::c_int = poll(
                 pollfds.as_mut_ptr(),
                 1 as libc::c_int as nfds_t,
                 0 as libc::c_int,
@@ -2793,7 +2793,7 @@ unsafe fn main_0(
             && propagation
                 != (MS_PRIVATE as libc::c_int | MS_REC as libc::c_int) as libc::c_ulong
         {
-            let mut rc: libc::c_int = mount(
+            let rc: libc::c_int = mount(
                 b"none\0" as *const u8 as *const libc::c_char,
                 procmnt,
                 0 as *const libc::c_char,

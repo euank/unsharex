@@ -58,11 +58,11 @@ pub const MBS_EDIT_RIGHT: C2RustUnnamed_0 = 1;
 pub const MBS_EDIT_LEFT: C2RustUnnamed_0 = 0;
 #[no_mangle]
 pub unsafe extern "C" fn mbs_new_edit(
-    mut buf: *mut libc::c_char,
-    mut bufsz: size_t,
-    mut ncells: size_t,
+    buf: *mut libc::c_char,
+    bufsz: size_t,
+    ncells: size_t,
 ) -> *mut mbs_editor {
-    let mut edit: *mut mbs_editor = calloc(
+    let edit: *mut mbs_editor = calloc(
         1 as libc::c_int as libc::c_ulong,
         ::core::mem::size_of::<mbs_editor>() as libc::c_ulong,
     ) as *mut mbs_editor;
@@ -76,8 +76,8 @@ pub unsafe extern "C" fn mbs_new_edit(
     return edit;
 }
 #[no_mangle]
-pub unsafe extern "C" fn mbs_free_edit(mut edit: *mut mbs_editor) -> *mut libc::c_char {
-    let mut ret: *mut libc::c_char = if !edit.is_null() {
+pub unsafe extern "C" fn mbs_free_edit(edit: *mut mbs_editor) -> *mut libc::c_char {
+    let ret: *mut libc::c_char = if !edit.is_null() {
         (*edit).buf
     } else {
         0 as *mut libc::c_char
@@ -86,8 +86,8 @@ pub unsafe extern "C" fn mbs_free_edit(mut edit: *mut mbs_editor) -> *mut libc::
     return ret;
 }
 unsafe extern "C" fn mbs_next(
-    mut str: *const libc::c_char,
-    mut ncells: *mut size_t,
+    str: *const libc::c_char,
+    ncells: *mut size_t,
 ) -> size_t {
     let mut wc: wchar_t = 0;
     let mut n: size_t = 0 as libc::c_int as size_t;
@@ -99,9 +99,9 @@ unsafe extern "C" fn mbs_next(
     return n;
 }
 unsafe extern "C" fn mbs_prev(
-    mut start: *const libc::c_char,
-    mut end: *const libc::c_char,
-    mut ncells: *mut size_t,
+    start: *const libc::c_char,
+    end: *const libc::c_char,
+    ncells: *mut size_t,
 ) -> size_t {
     let mut wc: wchar_t = 0 as libc::c_int;
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
@@ -130,8 +130,8 @@ unsafe extern "C" fn mbs_prev(
 }
 #[no_mangle]
 pub unsafe extern "C" fn mbs_edit_goto(
-    mut edit: *mut mbs_editor,
-    mut where_0: libc::c_int,
+    edit: *mut mbs_editor,
+    where_0: libc::c_int,
 ) -> libc::c_int {
     match where_0 {
         0 => {
@@ -188,8 +188,8 @@ pub unsafe extern "C" fn mbs_edit_goto(
     return 0 as libc::c_int;
 }
 unsafe extern "C" fn remove_next(
-    mut str: *mut libc::c_char,
-    mut ncells: *mut size_t,
+    str: *mut libc::c_char,
+    ncells: *mut size_t,
 ) -> size_t {
     let mut bytes: size_t = 0;
     let mut move_bytes: size_t = 0;
@@ -206,14 +206,14 @@ unsafe extern "C" fn remove_next(
     return n;
 }
 unsafe extern "C" fn mbs_insert(
-    mut str: *mut libc::c_char,
-    mut c: wint_t,
-    mut ncells: *mut size_t,
+    str: *mut libc::c_char,
+    c: wint_t,
+    ncells: *mut size_t,
 ) -> size_t {
     let mut n: size_t = 1 as libc::c_int as size_t;
     let mut bytes: size_t = 0;
     let mut in_0: *mut libc::c_char = 0 as *mut libc::c_char;
-    let mut wc: wchar_t = c as wchar_t;
+    let wc: wchar_t = c as wchar_t;
     let vla = __ctype_get_mb_cur_max() as usize;
     let mut in_buf: Vec::<libc::c_char> = ::std::vec::from_elem(0, vla);
     n = wctomb(in_buf.as_mut_ptr(), wc) as size_t;
@@ -232,7 +232,7 @@ unsafe extern "C" fn mbs_insert(
     *str.offset(bytes.wrapping_add(n) as isize) = '\0' as i32 as libc::c_char;
     return n;
 }
-unsafe extern "C" fn mbs_edit_remove(mut edit: *mut mbs_editor) -> libc::c_int {
+unsafe extern "C" fn mbs_edit_remove(edit: *mut mbs_editor) -> libc::c_int {
     let mut n: size_t = 0;
     let mut ncells: size_t = 0;
     if (*edit).cur_cells == 0 as libc::c_int as libc::c_ulong
@@ -251,7 +251,7 @@ unsafe extern "C" fn mbs_edit_remove(mut edit: *mut mbs_editor) -> libc::c_int {
     return 0 as libc::c_int;
 }
 #[no_mangle]
-pub unsafe extern "C" fn mbs_edit_delete(mut edit: *mut mbs_editor) -> libc::c_int {
+pub unsafe extern "C" fn mbs_edit_delete(edit: *mut mbs_editor) -> libc::c_int {
     if (*edit).cursor >= (*edit).cur_bytes
         && mbs_edit_goto(edit, MBS_EDIT_LEFT as libc::c_int) == 1 as libc::c_int
     {
@@ -260,7 +260,7 @@ pub unsafe extern "C" fn mbs_edit_delete(mut edit: *mut mbs_editor) -> libc::c_i
     return mbs_edit_remove(edit);
 }
 #[no_mangle]
-pub unsafe extern "C" fn mbs_edit_backspace(mut edit: *mut mbs_editor) -> libc::c_int {
+pub unsafe extern "C" fn mbs_edit_backspace(edit: *mut mbs_editor) -> libc::c_int {
     if mbs_edit_goto(edit, MBS_EDIT_LEFT as libc::c_int) == 0 as libc::c_int {
         return mbs_edit_remove(edit);
     }
@@ -268,8 +268,8 @@ pub unsafe extern "C" fn mbs_edit_backspace(mut edit: *mut mbs_editor) -> libc::
 }
 #[no_mangle]
 pub unsafe extern "C" fn mbs_edit_insert(
-    mut edit: *mut mbs_editor,
-    mut c: wint_t,
+    edit: *mut mbs_editor,
+    c: wint_t,
 ) -> libc::c_int {
     let mut n: size_t = 0;
     let mut ncells: size_t = 0;

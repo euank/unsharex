@@ -61,7 +61,7 @@ pub struct passwd {
 }
 #[inline]
 unsafe extern "C" fn xmalloc(size: size_t) -> *mut libc::c_void {
-    let mut ret: *mut libc::c_void = malloc(size);
+    let ret: *mut libc::c_void = malloc(size);
     if ret.is_null() && size != 0 {
         err(
             1 as libc::c_int,
@@ -73,7 +73,7 @@ unsafe extern "C" fn xmalloc(size: size_t) -> *mut libc::c_void {
 }
 #[inline]
 unsafe extern "C" fn xcalloc(nelems: size_t, size: size_t) -> *mut libc::c_void {
-    let mut ret: *mut libc::c_void = calloc(nelems, size);
+    let ret: *mut libc::c_void = calloc(nelems, size);
     if ret.is_null() && size != 0 && nelems != 0 {
         err(
             1 as libc::c_int,
@@ -84,7 +84,7 @@ unsafe extern "C" fn xcalloc(nelems: size_t, size: size_t) -> *mut libc::c_void 
     return ret;
 }
 #[inline]
-unsafe extern "C" fn xstrdup(mut str: *const libc::c_char) -> *mut libc::c_char {
+unsafe extern "C" fn xstrdup(str: *const libc::c_char) -> *mut libc::c_char {
     let mut ret: *mut libc::c_char = 0 as *mut libc::c_char;
     if !str.is_null() {} else {
         __assert_fail(
@@ -123,8 +123,8 @@ unsafe extern "C" fn xstrdup(mut str: *const libc::c_char) -> *mut libc::c_char 
 }
 #[no_mangle]
 pub unsafe extern "C" fn xgetpwnam(
-    mut username: *const libc::c_char,
-    mut pwdbuf: *mut *mut libc::c_char,
+    username: *const libc::c_char,
+    pwdbuf: *mut *mut libc::c_char,
 ) -> *mut passwd {
     let mut pwd: *mut passwd = 0 as *mut passwd;
     let mut res: *mut passwd = 0 as *mut passwd;
@@ -208,8 +208,8 @@ pub unsafe extern "C" fn xgetpwnam(
 }
 #[no_mangle]
 pub unsafe extern "C" fn xgetgrnam(
-    mut groupname: *const libc::c_char,
-    mut grpbuf: *mut *mut libc::c_char,
+    groupname: *const libc::c_char,
+    grpbuf: *mut *mut libc::c_char,
 ) -> *mut group {
     let mut grp: *mut group = 0 as *mut group;
     let mut res: *mut group = 0 as *mut group;
@@ -293,8 +293,8 @@ pub unsafe extern "C" fn xgetgrnam(
 }
 #[no_mangle]
 pub unsafe extern "C" fn xgetpwuid(
-    mut uid: uid_t,
-    mut pwdbuf: *mut *mut libc::c_char,
+    uid: uid_t,
+    pwdbuf: *mut *mut libc::c_char,
 ) -> *mut passwd {
     let mut pwd: *mut passwd = 0 as *mut passwd;
     let mut res: *mut passwd = 0 as *mut passwd;
