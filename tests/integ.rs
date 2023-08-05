@@ -11,7 +11,7 @@ fn compare_impls<F: Fn(bool, &mut Command)>(f: F) -> std::process::Output {
     let lhs_out = lhs.output();
     let rhs_out = rhs.output();
 
-    match (lhs_out, rhs_out) {
+    let (mut lhs, mut rhs) = match (lhs_out, rhs_out) {
         (Err(le), Err(re)) => {
             panic!("error equality: {:?}, {:?}", le, re);
         },
@@ -22,9 +22,46 @@ fn compare_impls<F: Fn(bool, &mut Command)>(f: F) -> std::process::Output {
             panic!("unshare error, but unsharex did not: {}", re);
         },
         (Ok(l), Ok(r)) => {
-            assert_eq!(l, r);
-            l
+            (l, r)
         },
+    };
+    // rewrite unsharex to unshare in stdout/stderr and such before asserting
+    for out in vec![&mut lhs, &mut rhs] {
+        let lhs_str = String::from_utf8(out.stdout.clone()).unwrap();
+        out.stdout = lhs_str
+            .replace(assert_cmd::cargo::cargo_bin("unsharex").to_str().unwrap(), "unshare")
+            .replace("unsharex", "unshare").into_bytes();
+        let lhs_str = String::from_utf8(out.stderr.clone()).unwrap();
+        out.stderr = lhs_str
+            .replace(assert_cmd::cargo::cargo_bin("unsharex").to_str().unwrap(), "unshare")
+            .replace("unsharex", "unshare").into_bytes();
+    }
+
+    assert_eq!(lhs.status, rhs.status, "status: {} != {}", lhs.status, rhs.status);
+    assert_eq!(lhs.stdout, rhs.stdout, "stdout\n{:?}\n{:?}", String::from_utf8(lhs.stdout.clone()), String::from_utf8(rhs.stdout.clone()));
+    assert_eq!(lhs.stderr, rhs.stderr, "stderr\n{:?}\n{:?}", String::from_utf8(lhs.stderr.clone()), String::from_utf8(rhs.stderr.clone()));
+
+    lhs
+}
+
+#[test]
+fn test_simple() {
+    let cmds = vec![
+        vec!["--", "/bin/sh", "-c", "echo 1"],
+        vec!["/bin/sh", "-c", "echo 1"],
+        vec!["--", "--", "/bin/sh", "-c", "echo 1"],
+        vec!["--", "--", "/some/path/that/does/not/exist"],
+        vec!["/bin/true"],
+        vec!["/bin/false"],
+        vec!["--keep-caps", "sh", "-c", "echo hi"],
+        vec!["--", "printenv"],
+    ];
+
+    for args in cmds {
+        println!("testing: {:?}", args);
+        compare_impls(|_, c| {
+            c.args(args.clone());
+        });
     }
 }
 
