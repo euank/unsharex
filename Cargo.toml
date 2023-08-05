@@ -1,0 +1,10 @@
+[package]
+name = "unsharex"
+authors = ["Euan Kemp <euank@euank.com>", "The util-linux authors (util-linux/AUTHORS)"]
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+c2rust-bitfields= "0.3"
+num-traits= "0.2"
+libc= "0.2"
