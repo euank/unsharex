@@ -3,11 +3,7 @@ extern "C" {
     fn wcswidth(__s: *const wchar_t, __n: size_t) -> libc::c_int;
     fn getpwuid(__uid: __uid_t) -> *mut passwd;
     fn getgrgid(__gid: __gid_t) -> *mut group;
-    fn asprintf(
-        __ptr: *mut *mut libc::c_char,
-        __fmt: *const libc::c_char,
-        _: ...
-    ) -> libc::c_int;
+    fn asprintf(__ptr: *mut *mut libc::c_char, __fmt: *const libc::c_char, _: ...) -> libc::c_int;
     fn strdup(_: *const libc::c_char) -> *mut libc::c_char;
     fn strlen(_: *const libc::c_char) -> libc::c_ulong;
     fn calloc(_: libc::c_ulong, _: libc::c_ulong) -> *mut libc::c_void;
@@ -53,10 +49,7 @@ pub struct idcache {
     pub width: libc::c_int,
 }
 #[no_mangle]
-pub unsafe extern "C" fn get_id(
-    ic: *mut idcache,
-    id: libc::c_ulong,
-) -> *mut identry {
+pub unsafe extern "C" fn get_id(ic: *mut idcache, id: libc::c_ulong) -> *mut identry {
     let mut ent: *mut identry = 0 as *mut identry;
     if ic.is_null() {
         return 0 as *mut identry;
@@ -88,11 +81,7 @@ pub unsafe extern "C" fn free_idcache(ic: *mut idcache) {
     }
     free(ic as *mut libc::c_void);
 }
-unsafe extern "C" fn add_id(
-    ic: *mut idcache,
-    name: *mut libc::c_char,
-    id: libc::c_ulong,
-) {
+unsafe extern "C" fn add_id(ic: *mut idcache, name: *mut libc::c_char, id: libc::c_ulong) {
     let mut ent: *mut identry = 0 as *mut identry;
     let mut x: *mut identry = 0 as *mut identry;
     let mut w: libc::c_int = 0 as libc::c_int;
@@ -155,7 +144,11 @@ pub unsafe extern "C" fn add_uid(cache: *mut idcache, id: libc::c_ulong) {
         let pw: *mut passwd = getpwuid(id as uid_t);
         add_id(
             cache,
-            if !pw.is_null() { (*pw).pw_name } else { 0 as *mut libc::c_char },
+            if !pw.is_null() {
+                (*pw).pw_name
+            } else {
+                0 as *mut libc::c_char
+            },
             id,
         );
     }
@@ -167,7 +160,11 @@ pub unsafe extern "C" fn add_gid(cache: *mut idcache, id: libc::c_ulong) {
         let gr: *mut group = getgrgid(id as gid_t);
         add_id(
             cache,
-            if !gr.is_null() { (*gr).gr_name } else { 0 as *mut libc::c_char },
+            if !gr.is_null() {
+                (*gr).gr_name
+            } else {
+                0 as *mut libc::c_char
+            },
             id,
         );
     }

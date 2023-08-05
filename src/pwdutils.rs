@@ -86,29 +86,29 @@ unsafe extern "C" fn xcalloc(nelems: size_t, size: size_t) -> *mut libc::c_void 
 #[inline]
 unsafe extern "C" fn xstrdup(str: *const libc::c_char) -> *mut libc::c_char {
     let mut ret: *mut libc::c_char = 0 as *mut libc::c_char;
-    if !str.is_null() {} else {
+    if !str.is_null() {
+    } else {
         __assert_fail(
             b"str\0" as *const u8 as *const libc::c_char,
             b"./include/xalloc.h\0" as *const u8 as *const libc::c_char,
             80 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 28],
-                &[libc::c_char; 28],
-            >(b"char *xstrdup(const char *)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 28], &[libc::c_char; 28]>(
+                b"char *xstrdup(const char *)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_5094: {
-        if !str.is_null() {} else {
+        if !str.is_null() {
+        } else {
             __assert_fail(
                 b"str\0" as *const u8 as *const libc::c_char,
                 b"./include/xalloc.h\0" as *const u8 as *const libc::c_char,
                 80 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 28],
-                    &[libc::c_char; 28],
-                >(b"char *xstrdup(const char *)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 28], &[libc::c_char; 28]>(
+                    b"char *xstrdup(const char *)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
@@ -129,60 +129,59 @@ pub unsafe extern "C" fn xgetpwnam(
     let mut pwd: *mut passwd = 0 as *mut passwd;
     let mut res: *mut passwd = 0 as *mut passwd;
     let mut rc: libc::c_int = 0;
-    if !pwdbuf.is_null() {} else {
+    if !pwdbuf.is_null() {
+    } else {
         __assert_fail(
             b"pwdbuf\0" as *const u8 as *const libc::c_char,
             b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
             21 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 48],
-                &[libc::c_char; 48],
-            >(b"struct passwd *xgetpwnam(const char *, char **)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 48], &[libc::c_char; 48]>(
+                b"struct passwd *xgetpwnam(const char *, char **)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_4646: {
-        if !pwdbuf.is_null() {} else {
+        if !pwdbuf.is_null() {
+        } else {
             __assert_fail(
                 b"pwdbuf\0" as *const u8 as *const libc::c_char,
                 b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
                 21 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 48],
-                    &[libc::c_char; 48],
-                >(b"struct passwd *xgetpwnam(const char *, char **)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 48], &[libc::c_char; 48]>(
+                    b"struct passwd *xgetpwnam(const char *, char **)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
-    if !username.is_null() {} else {
+    if !username.is_null() {
+    } else {
         __assert_fail(
             b"username\0" as *const u8 as *const libc::c_char,
             b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
             22 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 48],
-                &[libc::c_char; 48],
-            >(b"struct passwd *xgetpwnam(const char *, char **)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 48], &[libc::c_char; 48]>(
+                b"struct passwd *xgetpwnam(const char *, char **)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_4609: {
-        if !username.is_null() {} else {
+        if !username.is_null() {
+        } else {
             __assert_fail(
                 b"username\0" as *const u8 as *const libc::c_char,
                 b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
                 22 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 48],
-                    &[libc::c_char; 48],
-                >(b"struct passwd *xgetpwnam(const char *, char **)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 48], &[libc::c_char; 48]>(
+                    b"struct passwd *xgetpwnam(const char *, char **)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
-    *pwdbuf = xmalloc((16 as libc::c_int * 1024 as libc::c_int) as size_t)
-        as *mut libc::c_char;
+    *pwdbuf = xmalloc((16 as libc::c_int * 1024 as libc::c_int) as size_t) as *mut libc::c_char;
     pwd = xcalloc(
         1 as libc::c_int as size_t,
         ::core::mem::size_of::<passwd>() as libc::c_ulong,
@@ -200,7 +199,7 @@ pub unsafe extern "C" fn xgetpwnam(
     } else if res.is_null() {
         *__errno_location() = 22 as libc::c_int;
     } else {
-        return pwd
+        return pwd;
     }
     free(pwd as *mut libc::c_void);
     free(*pwdbuf as *mut libc::c_void);
@@ -214,60 +213,59 @@ pub unsafe extern "C" fn xgetgrnam(
     let mut grp: *mut group = 0 as *mut group;
     let mut res: *mut group = 0 as *mut group;
     let mut rc: libc::c_int = 0;
-    if !grpbuf.is_null() {} else {
+    if !grpbuf.is_null() {
+    } else {
         __assert_fail(
             b"grpbuf\0" as *const u8 as *const libc::c_char,
             b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
             53 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 47],
-                &[libc::c_char; 47],
-            >(b"struct group *xgetgrnam(const char *, char **)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 47], &[libc::c_char; 47]>(
+                b"struct group *xgetgrnam(const char *, char **)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_4842: {
-        if !grpbuf.is_null() {} else {
+        if !grpbuf.is_null() {
+        } else {
             __assert_fail(
                 b"grpbuf\0" as *const u8 as *const libc::c_char,
                 b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
                 53 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 47],
-                    &[libc::c_char; 47],
-                >(b"struct group *xgetgrnam(const char *, char **)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 47], &[libc::c_char; 47]>(
+                    b"struct group *xgetgrnam(const char *, char **)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
-    if !groupname.is_null() {} else {
+    if !groupname.is_null() {
+    } else {
         __assert_fail(
             b"groupname\0" as *const u8 as *const libc::c_char,
             b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
             54 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 47],
-                &[libc::c_char; 47],
-            >(b"struct group *xgetgrnam(const char *, char **)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 47], &[libc::c_char; 47]>(
+                b"struct group *xgetgrnam(const char *, char **)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_4808: {
-        if !groupname.is_null() {} else {
+        if !groupname.is_null() {
+        } else {
             __assert_fail(
                 b"groupname\0" as *const u8 as *const libc::c_char,
                 b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
                 54 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 47],
-                    &[libc::c_char; 47],
-                >(b"struct group *xgetgrnam(const char *, char **)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 47], &[libc::c_char; 47]>(
+                    b"struct group *xgetgrnam(const char *, char **)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
-    *grpbuf = xmalloc((16 as libc::c_int * 1024 as libc::c_int) as size_t)
-        as *mut libc::c_char;
+    *grpbuf = xmalloc((16 as libc::c_int * 1024 as libc::c_int) as size_t) as *mut libc::c_char;
     grp = xcalloc(
         1 as libc::c_int as size_t,
         ::core::mem::size_of::<group>() as libc::c_ulong,
@@ -285,48 +283,44 @@ pub unsafe extern "C" fn xgetgrnam(
     } else if res.is_null() {
         *__errno_location() = 22 as libc::c_int;
     } else {
-        return grp
+        return grp;
     }
     free(grp as *mut libc::c_void);
     free(*grpbuf as *mut libc::c_void);
     return 0 as *mut group;
 }
 #[no_mangle]
-pub unsafe extern "C" fn xgetpwuid(
-    uid: uid_t,
-    pwdbuf: *mut *mut libc::c_char,
-) -> *mut passwd {
+pub unsafe extern "C" fn xgetpwuid(uid: uid_t, pwdbuf: *mut *mut libc::c_char) -> *mut passwd {
     let mut pwd: *mut passwd = 0 as *mut passwd;
     let mut res: *mut passwd = 0 as *mut passwd;
     let mut rc: libc::c_int = 0;
-    if !pwdbuf.is_null() {} else {
+    if !pwdbuf.is_null() {
+    } else {
         __assert_fail(
             b"pwdbuf\0" as *const u8 as *const libc::c_char,
             b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
             81 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 41],
-                &[libc::c_char; 41],
-            >(b"struct passwd *xgetpwuid(uid_t, char **)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 41], &[libc::c_char; 41]>(
+                b"struct passwd *xgetpwuid(uid_t, char **)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_5003: {
-        if !pwdbuf.is_null() {} else {
+        if !pwdbuf.is_null() {
+        } else {
             __assert_fail(
                 b"pwdbuf\0" as *const u8 as *const libc::c_char,
                 b"lib/pwdutils.c\0" as *const u8 as *const libc::c_char,
                 81 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 41],
-                    &[libc::c_char; 41],
-                >(b"struct passwd *xgetpwuid(uid_t, char **)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 41], &[libc::c_char; 41]>(
+                    b"struct passwd *xgetpwuid(uid_t, char **)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
-    *pwdbuf = xmalloc((16 as libc::c_int * 1024 as libc::c_int) as size_t)
-        as *mut libc::c_char;
+    *pwdbuf = xmalloc((16 as libc::c_int * 1024 as libc::c_int) as size_t) as *mut libc::c_char;
     pwd = xcalloc(
         1 as libc::c_int as size_t,
         ::core::mem::size_of::<passwd>() as libc::c_ulong,
@@ -344,7 +338,7 @@ pub unsafe extern "C" fn xgetpwuid(
     } else if res.is_null() {
         *__errno_location() = 22 as libc::c_int;
     } else {
-        return pwd
+        return pwd;
     }
     free(pwd as *mut libc::c_void);
     free(*pwdbuf as *mut libc::c_void);
@@ -359,8 +353,7 @@ pub unsafe extern "C" fn xgetlogin() -> *mut libc::c_char {
     if *__errno_location() == 0 as libc::c_int {
         pw = getpwuid(ruid);
     }
-    if !pw.is_null() && !((*pw).pw_name).is_null() && *(*pw).pw_name as libc::c_int != 0
-    {
+    if !pw.is_null() && !((*pw).pw_name).is_null() && *(*pw).pw_name as libc::c_int != 0 {
         return xstrdup((*pw).pw_name);
     }
     return 0 as *mut libc::c_char;

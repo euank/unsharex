@@ -10,8 +10,6 @@ pub fn exec_shell() -> ! {
     arg0.push("-");
     arg0.push(shell_basename);
 
-    std::process::Command::new(shell)
-        .arg0(arg0)
-        .exec();
+    std::process::Command::new(shell).arg0(arg0).exec();
     panic!("failed to execute {}", shell_str);
 }

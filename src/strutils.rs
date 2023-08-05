@@ -1,6 +1,5 @@
 use ::libc;
 
-
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -18,11 +17,7 @@ extern "C" {
     ) -> libc::c_int;
     fn fgetc(__stream: *mut FILE) -> libc::c_int;
     fn strtod(_: *const libc::c_char, _: *mut *mut libc::c_char) -> libc::c_double;
-    fn strtol(
-        _: *const libc::c_char,
-        _: *mut *mut libc::c_char,
-        _: libc::c_int,
-    ) -> libc::c_long;
+    fn strtol(_: *const libc::c_char, _: *mut *mut libc::c_char, _: libc::c_int) -> libc::c_long;
     fn malloc(_: libc::c_ulong) -> *mut libc::c_void;
     fn realloc(_: *mut libc::c_void, _: libc::c_ulong) -> *mut libc::c_void;
     fn free(_: *mut libc::c_void);
@@ -39,17 +34,9 @@ extern "C" {
     fn __ctype_b_loc() -> *mut *const libc::c_ushort;
     fn __ctype_tolower_loc() -> *mut *const __int32_t;
     fn __errno_location() -> *mut libc::c_int;
-    fn memcpy(
-        _: *mut libc::c_void,
-        _: *const libc::c_void,
-        _: libc::c_ulong,
-    ) -> *mut libc::c_void;
+    fn memcpy(_: *mut libc::c_void, _: *const libc::c_void, _: libc::c_ulong) -> *mut libc::c_void;
     fn strcmp(_: *const libc::c_char, _: *const libc::c_char) -> libc::c_int;
-    fn strncmp(
-        _: *const libc::c_char,
-        _: *const libc::c_char,
-        _: libc::c_ulong,
-    ) -> libc::c_int;
+    fn strncmp(_: *const libc::c_char, _: *const libc::c_char, _: libc::c_ulong) -> libc::c_int;
     fn strdup(_: *const libc::c_char) -> *mut libc::c_char;
     fn strndup(_: *const libc::c_char, _: libc::c_ulong) -> *mut libc::c_char;
     fn strchr(_: *const libc::c_char, _: libc::c_int) -> *mut libc::c_char;
@@ -200,11 +187,7 @@ unsafe extern "C" fn tolower(mut __c: libc::c_int) -> libc::c_int {
     };
 }
 #[inline]
-unsafe extern "C" fn xstrncpy(
-    dest: *mut libc::c_char,
-    src: *const libc::c_char,
-    n: size_t,
-) {
+unsafe extern "C" fn xstrncpy(dest: *mut libc::c_char, src: *const libc::c_char, n: size_t) {
     let mut len: size_t = if !src.is_null() {
         strlen(src)
     } else {
@@ -218,7 +201,11 @@ unsafe extern "C" fn xstrncpy(
         let mut _min2: libc::c_ulong = n.wrapping_sub(1 as libc::c_int as libc::c_ulong);
         &mut _min1 as *mut size_t;
         &mut _min2 as *mut libc::c_ulong;
-        if _min1 < _min2 { _min1 } else { _min2 }
+        if _min1 < _min2 {
+            _min1
+        } else {
+            _min2
+        }
     };
     memcpy(dest as *mut libc::c_void, src as *const libc::c_void, len);
     *dest.offset(len as isize) = 0 as libc::c_int as libc::c_char;
@@ -239,13 +226,10 @@ unsafe extern "C" fn do_scale_by_power(
         if !(fresh0 != 0) {
             break;
         }
-        if (18446744073709551615 as libc::c_ulong).wrapping_div(base as libc::c_ulong)
-            < *x
-        {
+        if (18446744073709551615 as libc::c_ulong).wrapping_div(base as libc::c_ulong) < *x {
             return -(34 as libc::c_int);
         }
-        *x = (*x as libc::c_ulong).wrapping_mul(base as libc::c_ulong) as uintmax_t
-            as uintmax_t;
+        *x = (*x as libc::c_ulong).wrapping_mul(base as libc::c_ulong) as uintmax_t as uintmax_t;
     }
     return 0 as libc::c_int;
 }
@@ -264,18 +248,16 @@ pub unsafe extern "C" fn parse_size(
     let mut rc: libc::c_int = 0 as libc::c_int;
     let mut pwr: libc::c_int = 0 as libc::c_int;
     let mut frac_zeros: libc::c_int = 0 as libc::c_int;
-    static mut suf: *const libc::c_char = b"KMGTPEZY\0" as *const u8
-        as *const libc::c_char;
-    static mut suf2: *const libc::c_char = b"kmgtpezy\0" as *const u8
-        as *const libc::c_char;
+    static mut suf: *const libc::c_char = b"KMGTPEZY\0" as *const u8 as *const libc::c_char;
+    static mut suf2: *const libc::c_char = b"kmgtpezy\0" as *const u8 as *const libc::c_char;
     let mut sp: *const libc::c_char = 0 as *const libc::c_char;
     *res = 0 as libc::c_int as uintmax_t;
     if str.is_null() || *str == 0 {
         rc = -(22 as libc::c_int);
     } else {
         p = str;
-        while *(*__ctype_b_loc()).offset(*p as libc::c_uchar as libc::c_int as isize)
-            as libc::c_int & _ISspace as libc::c_int as libc::c_ushort as libc::c_int
+        while *(*__ctype_b_loc()).offset(*p as libc::c_uchar as libc::c_int as isize) as libc::c_int
+            & _ISspace as libc::c_int as libc::c_ushort as libc::c_int
             != 0
         {
             p = p.offset(1);
@@ -303,20 +285,19 @@ pub unsafe extern "C" fn parse_size(
                 } else {
                     p = end;
                     loop {
-                        if *p.offset(1 as libc::c_int as isize) as libc::c_int
-                            == 'i' as i32
-                            && (*p.offset(2 as libc::c_int as isize) as libc::c_int
-                                == 'B' as i32
+                        if *p.offset(1 as libc::c_int as isize) as libc::c_int == 'i' as i32
+                            && (*p.offset(2 as libc::c_int as isize) as libc::c_int == 'B' as i32
                                 || *p.offset(2 as libc::c_int as isize) as libc::c_int
-                                    == 'b' as i32) && *p.offset(3 as libc::c_int as isize) == 0
+                                    == 'b' as i32)
+                            && *p.offset(3 as libc::c_int as isize) == 0
                         {
                             base = 1024 as libc::c_int;
                             current_block = 9853141518545631134;
                             break;
                         } else if (*p.offset(1 as libc::c_int as isize) as libc::c_int
                             == 'B' as i32
-                            || *p.offset(1 as libc::c_int as isize) as libc::c_int
-                                == 'b' as i32) && *p.offset(2 as libc::c_int as isize) == 0
+                            || *p.offset(1 as libc::c_int as isize) as libc::c_int == 'b' as i32)
+                            && *p.offset(2 as libc::c_int as isize) == 0
                         {
                             base = 1000 as libc::c_int;
                             current_block = 9853141518545631134;
@@ -338,7 +319,8 @@ pub unsafe extern "C" fn parse_size(
                                 0 as libc::c_int as libc::c_ulong
                             };
                             if frac == 0 as libc::c_int as libc::c_ulong
-                                && *p as libc::c_int != 0 && !dp.is_null()
+                                && *p as libc::c_int != 0
+                                && !dp.is_null()
                                 && strncmp(dp, p, dpsz) == 0 as libc::c_int
                             {
                                 let mut fstr: *const libc::c_char = p.offset(dpsz as isize);
@@ -394,13 +376,15 @@ pub unsafe extern "C" fn parse_size(
                             sp = strchr(suf, *p as libc::c_int);
                             if !sp.is_null() {
                                 pwr = (sp.offset_from(suf) as libc::c_long
-                                    + 1 as libc::c_int as libc::c_long) as libc::c_int;
+                                    + 1 as libc::c_int as libc::c_long)
+                                    as libc::c_int;
                                 current_block = 3934796541983872331;
                             } else {
                                 sp = strchr(suf2, *p as libc::c_int);
                                 if !sp.is_null() {
                                     pwr = (sp.offset_from(suf2) as libc::c_long
-                                        + 1 as libc::c_int as libc::c_long) as libc::c_int;
+                                        + 1 as libc::c_int as libc::c_long)
+                                        as libc::c_int;
                                     current_block = 3934796541983872331;
                                 } else {
                                     rc = -(22 as libc::c_int);
@@ -416,39 +400,51 @@ pub unsafe extern "C" fn parse_size(
                                     }
                                     if frac != 0 && pwr != 0 {
                                         let mut i: libc::c_int = 0;
-                                        let mut frac_div: uintmax_t = 10 as libc::c_int
-                                            as uintmax_t;
+                                        let mut frac_div: uintmax_t =
+                                            10 as libc::c_int as uintmax_t;
                                         let mut frac_poz: uintmax_t = 1 as libc::c_int as uintmax_t;
-                                        let mut frac_base: uintmax_t = 1 as libc::c_int
-                                            as uintmax_t;
+                                        let mut frac_base: uintmax_t =
+                                            1 as libc::c_int as uintmax_t;
                                         do_scale_by_power(&mut frac_base, base, pwr);
                                         while frac_div < frac {
                                             if frac_div
                                                 <= (18446744073709551615 as libc::c_ulong)
-                                                    .wrapping_div(10 as libc::c_int as libc::c_ulong)
+                                                    .wrapping_div(
+                                                        10 as libc::c_int as libc::c_ulong,
+                                                    )
                                             {
-                                                frac_div = (frac_div as libc::c_ulong)
-                                                    .wrapping_mul(10 as libc::c_int as libc::c_ulong)
-                                                    as uintmax_t as uintmax_t;
+                                                frac_div = (frac_div as libc::c_ulong).wrapping_mul(
+                                                    10 as libc::c_int as libc::c_ulong,
+                                                )
+                                                    as uintmax_t
+                                                    as uintmax_t;
                                             } else {
-                                                frac = (frac as libc::c_ulong)
-                                                    .wrapping_div(10 as libc::c_int as libc::c_ulong)
-                                                    as uintmax_t as uintmax_t;
+                                                frac = (frac as libc::c_ulong).wrapping_div(
+                                                    10 as libc::c_int as libc::c_ulong,
+                                                )
+                                                    as uintmax_t
+                                                    as uintmax_t;
                                             }
                                         }
                                         i = 0 as libc::c_int;
                                         while i < frac_zeros {
                                             if frac_div
                                                 <= (18446744073709551615 as libc::c_ulong)
-                                                    .wrapping_div(10 as libc::c_int as libc::c_ulong)
+                                                    .wrapping_div(
+                                                        10 as libc::c_int as libc::c_ulong,
+                                                    )
                                             {
-                                                frac_div = (frac_div as libc::c_ulong)
-                                                    .wrapping_mul(10 as libc::c_int as libc::c_ulong)
-                                                    as uintmax_t as uintmax_t;
+                                                frac_div = (frac_div as libc::c_ulong).wrapping_mul(
+                                                    10 as libc::c_int as libc::c_ulong,
+                                                )
+                                                    as uintmax_t
+                                                    as uintmax_t;
                                             } else {
-                                                frac = (frac as libc::c_ulong)
-                                                    .wrapping_div(10 as libc::c_int as libc::c_ulong)
-                                                    as uintmax_t as uintmax_t;
+                                                frac = (frac as libc::c_ulong).wrapping_div(
+                                                    10 as libc::c_int as libc::c_ulong,
+                                                )
+                                                    as uintmax_t
+                                                    as uintmax_t;
                                             }
                                             i += 1;
                                             i;
@@ -457,22 +453,26 @@ pub unsafe extern "C" fn parse_size(
                                             let seg: libc::c_uint = frac
                                                 .wrapping_rem(10 as libc::c_int as libc::c_ulong)
                                                 as libc::c_uint;
-                                            let seg_div: uintmax_t = frac_div
-                                                .wrapping_div(frac_poz);
+                                            let seg_div: uintmax_t =
+                                                frac_div.wrapping_div(frac_poz);
                                             frac = (frac as libc::c_ulong)
                                                 .wrapping_div(10 as libc::c_int as libc::c_ulong)
-                                                as uintmax_t as uintmax_t;
+                                                as uintmax_t
+                                                as uintmax_t;
                                             frac_poz = (frac_poz as libc::c_ulong)
                                                 .wrapping_mul(10 as libc::c_int as libc::c_ulong)
-                                                as uintmax_t as uintmax_t;
+                                                as uintmax_t
+                                                as uintmax_t;
                                             if seg != 0
                                                 && seg_div.wrapping_div(seg as libc::c_ulong) != 0
                                             {
-                                                x = (x as libc::c_ulong)
-                                                    .wrapping_add(
-                                                        frac_base
-                                                            .wrapping_div(seg_div.wrapping_div(seg as libc::c_ulong)),
-                                                    ) as uintmax_t as uintmax_t;
+                                                x = (x as libc::c_ulong).wrapping_add(
+                                                    frac_base.wrapping_div(
+                                                        seg_div.wrapping_div(seg as libc::c_ulong),
+                                                    ),
+                                                )
+                                                    as uintmax_t
+                                                    as uintmax_t;
                                             }
                                             if !(frac != 0) {
                                                 break;
@@ -500,10 +500,7 @@ pub unsafe extern "C" fn parse_size(
     return rc;
 }
 #[no_mangle]
-pub unsafe extern "C" fn strtosize(
-    str: *const libc::c_char,
-    res: *mut uintmax_t,
-) -> libc::c_int {
+pub unsafe extern "C" fn strtosize(str: *const libc::c_char, res: *mut uintmax_t) -> libc::c_int {
     return parse_size(str, res, 0 as *mut libc::c_int);
 }
 #[no_mangle]
@@ -513,9 +510,10 @@ pub unsafe extern "C" fn isdigit_strend(
 ) -> libc::c_int {
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
     p = str;
-    while !p.is_null() && *p as libc::c_int != 0
-        && *(*__ctype_b_loc()).offset(*p as libc::c_uchar as libc::c_int as isize)
-            as libc::c_int & _ISdigit as libc::c_int as libc::c_ushort as libc::c_int
+    while !p.is_null()
+        && *p as libc::c_int != 0
+        && *(*__ctype_b_loc()).offset(*p as libc::c_uchar as libc::c_int as isize) as libc::c_int
+            & _ISdigit as libc::c_int as libc::c_ushort as libc::c_int
             != 0
     {
         p = p.offset(1);
@@ -533,9 +531,10 @@ pub unsafe extern "C" fn isxdigit_strend(
 ) -> libc::c_int {
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
     p = str;
-    while !p.is_null() && *p as libc::c_int != 0
-        && *(*__ctype_b_loc()).offset(*p as libc::c_uchar as libc::c_int as isize)
-            as libc::c_int & _ISxdigit as libc::c_int as libc::c_ushort as libc::c_int
+    while !p.is_null()
+        && *p as libc::c_int != 0
+        && *(*__ctype_b_loc()).offset(*p as libc::c_uchar as libc::c_int as isize) as libc::c_int
+            & _ISxdigit as libc::c_int as libc::c_ushort as libc::c_int
             != 0
     {
         p = p.offset(1);
@@ -772,7 +771,8 @@ pub unsafe extern "C" fn strtod_or_err(
     *__errno_location() = 0 as libc::c_int;
     if !(str.is_null() || *str as libc::c_int == '\0' as i32) {
         num = strtod(str, &mut end);
-        if !(*__errno_location() != 0 || str == end as *const libc::c_char
+        if !(*__errno_location() != 0
+            || str == end as *const libc::c_char
             || !end.is_null() && *end as libc::c_int != 0)
         {
             return num;
@@ -833,14 +833,9 @@ pub unsafe extern "C" fn strtotime_or_err(
     return user_input;
 }
 #[no_mangle]
-pub unsafe extern "C" fn xstrmode(
-    mode: mode_t,
-    str: *mut libc::c_char,
-) -> *mut libc::c_char {
+pub unsafe extern "C" fn xstrmode(mode: mode_t, str: *mut libc::c_char) -> *mut libc::c_char {
     let mut i: libc::c_ushort = 0 as libc::c_int as libc::c_ushort;
-    if mode & 0o170000 as libc::c_int as libc::c_uint
-        == 0o40000 as libc::c_int as libc::c_uint
-    {
+    if mode & 0o170000 as libc::c_int as libc::c_uint == 0o40000 as libc::c_int as libc::c_uint {
         let fresh10 = i;
         i = i.wrapping_add(1);
         *str.offset(fresh10 as isize) = 'd' as i32 as libc::c_char;
@@ -883,30 +878,21 @@ pub unsafe extern "C" fn xstrmode(
     }
     let fresh17 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh17 as isize,
-        ) = (if mode & 0o400 as libc::c_int as libc::c_uint != 0 {
+    *str.offset(fresh17 as isize) = (if mode & 0o400 as libc::c_int as libc::c_uint != 0 {
         'r' as i32
     } else {
         '-' as i32
     }) as libc::c_char;
     let fresh18 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh18 as isize,
-        ) = (if mode & 0o200 as libc::c_int as libc::c_uint != 0 {
+    *str.offset(fresh18 as isize) = (if mode & 0o200 as libc::c_int as libc::c_uint != 0 {
         'w' as i32
     } else {
         '-' as i32
     }) as libc::c_char;
     let fresh19 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh19 as isize,
-        ) = (if mode & 0o4000 as libc::c_int as libc::c_uint != 0 {
+    *str.offset(fresh19 as isize) = (if mode & 0o4000 as libc::c_int as libc::c_uint != 0 {
         if mode & 0o100 as libc::c_int as libc::c_uint != 0 {
             's' as i32
         } else {
@@ -919,30 +905,23 @@ pub unsafe extern "C" fn xstrmode(
     }) as libc::c_char;
     let fresh20 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh20 as isize,
-        ) = (if mode & (0o400 as libc::c_int >> 3 as libc::c_int) as libc::c_uint != 0 {
-        'r' as i32
-    } else {
-        '-' as i32
-    }) as libc::c_char;
+    *str.offset(fresh20 as isize) =
+        (if mode & (0o400 as libc::c_int >> 3 as libc::c_int) as libc::c_uint != 0 {
+            'r' as i32
+        } else {
+            '-' as i32
+        }) as libc::c_char;
     let fresh21 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh21 as isize,
-        ) = (if mode & (0o200 as libc::c_int >> 3 as libc::c_int) as libc::c_uint != 0 {
-        'w' as i32
-    } else {
-        '-' as i32
-    }) as libc::c_char;
+    *str.offset(fresh21 as isize) =
+        (if mode & (0o200 as libc::c_int >> 3 as libc::c_int) as libc::c_uint != 0 {
+            'w' as i32
+        } else {
+            '-' as i32
+        }) as libc::c_char;
     let fresh22 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh22 as isize,
-        ) = (if mode & 0o2000 as libc::c_int as libc::c_uint != 0 {
+    *str.offset(fresh22 as isize) = (if mode & 0o2000 as libc::c_int as libc::c_uint != 0 {
         if mode & (0o100 as libc::c_int >> 3 as libc::c_int) as libc::c_uint != 0 {
             's' as i32
         } else {
@@ -955,10 +934,7 @@ pub unsafe extern "C" fn xstrmode(
     }) as libc::c_char;
     let fresh23 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh23 as isize,
-        ) = (if mode
+    *str.offset(fresh23 as isize) = (if mode
         & (0o400 as libc::c_int >> 3 as libc::c_int >> 3 as libc::c_int) as libc::c_uint
         != 0
     {
@@ -968,10 +944,7 @@ pub unsafe extern "C" fn xstrmode(
     }) as libc::c_char;
     let fresh24 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh24 as isize,
-        ) = (if mode
+    *str.offset(fresh24 as isize) = (if mode
         & (0o200 as libc::c_int >> 3 as libc::c_int >> 3 as libc::c_int) as libc::c_uint
         != 0
     {
@@ -981,20 +954,15 @@ pub unsafe extern "C" fn xstrmode(
     }) as libc::c_char;
     let fresh25 = i;
     i = i.wrapping_add(1);
-    *str
-        .offset(
-            fresh25 as isize,
-        ) = (if mode & 0o1000 as libc::c_int as libc::c_uint != 0 {
-        if mode
-            & (0o100 as libc::c_int >> 3 as libc::c_int >> 3 as libc::c_int)
-                as libc::c_uint != 0
+    *str.offset(fresh25 as isize) = (if mode & 0o1000 as libc::c_int as libc::c_uint != 0 {
+        if mode & (0o100 as libc::c_int >> 3 as libc::c_int >> 3 as libc::c_int) as libc::c_uint
+            != 0
         {
             't' as i32
         } else {
             'T' as i32
         }
-    } else if mode
-        & (0o100 as libc::c_int >> 3 as libc::c_int >> 3 as libc::c_int) as libc::c_uint
+    } else if mode & (0o100 as libc::c_int >> 3 as libc::c_int >> 3 as libc::c_int) as libc::c_uint
         != 0
     {
         'x' as i32
@@ -1024,8 +992,7 @@ pub unsafe extern "C" fn size_to_human_string(
     let mut dec: libc::c_int = 0;
     let mut exp: libc::c_int = 0;
     let mut frac: uint64_t = 0;
-    let letters: *const libc::c_char = b"BKMGTPE\0" as *const u8
-        as *const libc::c_char;
+    let letters: *const libc::c_char = b"BKMGTPE\0" as *const u8 as *const libc::c_char;
     let mut suffix: [libc::c_char; 5] = [0; 5];
     let mut psuf: *mut libc::c_char = suffix.as_mut_ptr();
     let mut c: libc::c_char = 0;
@@ -1035,10 +1002,13 @@ pub unsafe extern "C" fn size_to_human_string(
         *fresh26 = ' ' as i32 as libc::c_char;
     }
     exp = get_exp(bytes);
-    c = *letters
-        .offset(
-            (if exp != 0 { exp / 10 as libc::c_int } else { 0 as libc::c_int }) as isize,
-        );
+    c = *letters.offset(
+        (if exp != 0 {
+            exp / 10 as libc::c_int
+        } else {
+            0 as libc::c_int
+        }) as isize,
+    );
     dec = (if exp != 0 {
         (bytes as libc::c_ulonglong).wrapping_div((1 as libc::c_ulonglong) << exp)
     } else {
@@ -1052,9 +1022,7 @@ pub unsafe extern "C" fn size_to_human_string(
     let fresh27 = psuf;
     psuf = psuf.offset(1);
     *fresh27 = c;
-    if options & SIZE_SUFFIX_3LETTER as libc::c_int != 0
-        && c as libc::c_int != 'B' as i32
-    {
+    if options & SIZE_SUFFIX_3LETTER as libc::c_int != 0 && c as libc::c_int != 'B' as i32 {
         let fresh28 = psuf;
         psuf = psuf.offset(1);
         *fresh28 = 'i' as i32 as libc::c_char;
@@ -1070,12 +1038,12 @@ pub unsafe extern "C" fn size_to_human_string(
         {
             frac = (frac
                 .wrapping_div(1024 as libc::c_int as libc::c_ulong)
-                .wrapping_mul(1000 as libc::c_int as libc::c_ulong) as libc::c_ulonglong)
+                .wrapping_mul(1000 as libc::c_int as libc::c_ulong)
+                as libc::c_ulonglong)
                 .wrapping_div((1 as libc::c_ulonglong) << exp - 10 as libc::c_int)
                 as uint64_t;
         } else {
-            frac = (frac.wrapping_mul(1000 as libc::c_int as libc::c_ulong)
-                as libc::c_ulonglong)
+            frac = (frac.wrapping_mul(1000 as libc::c_int as libc::c_ulong) as libc::c_ulonglong)
                 .wrapping_div((1 as libc::c_ulonglong) << exp) as uint64_t;
         }
         if options & SIZE_DECIMAL_2DIGITS as libc::c_int != 0 {
@@ -1114,8 +1082,7 @@ pub unsafe extern "C" fn size_to_human_string(
             frac,
         );
         if len > 0 as libc::c_int
-            && (len as size_t)
-                < ::core::mem::size_of::<[libc::c_char; 32]>() as libc::c_ulong
+            && (len as size_t) < ::core::mem::size_of::<[libc::c_char; 32]>() as libc::c_ulong
         {
             if buf[(len - 1 as libc::c_int) as usize] as libc::c_int == '0' as i32 {
                 let fresh30 = len;
@@ -1147,9 +1114,7 @@ pub unsafe extern "C" fn string_to_idarray(
     list: *const libc::c_char,
     ary: *mut libc::c_int,
     arysz: size_t,
-    name2id: Option::<
-        unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int,
-    >,
+    name2id: Option<unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int>,
 ) -> libc::c_int {
     let mut begin: *const libc::c_char = 0 as *const libc::c_char;
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
@@ -1177,10 +1142,10 @@ pub unsafe extern "C" fn string_to_idarray(
             if end <= begin {
                 return -(1 as libc::c_int);
             }
-            id = name2id
-                .expect(
-                    "non-null function pointer",
-                )(begin, end.offset_from(begin) as libc::c_long as size_t);
+            id = name2id.expect("non-null function pointer")(
+                begin,
+                end.offset_from(begin) as libc::c_long as size_t,
+            );
             if id == -(1 as libc::c_int) {
                 return -(1 as libc::c_int);
             }
@@ -1203,9 +1168,7 @@ pub unsafe extern "C" fn string_add_to_idarray(
     ary: *mut libc::c_int,
     arysz: size_t,
     ary_pos: *mut size_t,
-    name2id: Option::<
-        unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int,
-    >,
+    name2id: Option<unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int>,
 ) -> libc::c_int {
     let mut list_add: *const libc::c_char = 0 as *const libc::c_char;
     let mut r: libc::c_int = 0;
@@ -1225,8 +1188,7 @@ pub unsafe extern "C" fn string_add_to_idarray(
         name2id,
     );
     if r > 0 as libc::c_int {
-        *ary_pos = (*ary_pos as libc::c_ulong).wrapping_add(r as libc::c_ulong) as size_t
-            as size_t;
+        *ary_pos = (*ary_pos as libc::c_ulong).wrapping_add(r as libc::c_ulong) as size_t as size_t;
     }
     return r;
 }
@@ -1234,9 +1196,7 @@ pub unsafe extern "C" fn string_add_to_idarray(
 pub unsafe extern "C" fn string_to_bitarray(
     list: *const libc::c_char,
     ary: *mut libc::c_char,
-    name2bit: Option::<
-        unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int,
-    >,
+    name2bit: Option<unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_int>,
     allow_range: size_t,
 ) -> libc::c_int {
     let mut begin: *const libc::c_char = 0 as *const libc::c_char;
@@ -1264,8 +1224,7 @@ pub unsafe extern "C" fn string_to_bitarray(
                 return -(1 as libc::c_int);
             }
             if allow_range != 0 {
-                if *end.offset(-(1 as libc::c_int as isize)) as libc::c_int == '+' as i32
-                {
+                if *end.offset(-(1 as libc::c_int as isize)) as libc::c_int == '+' as i32 {
                     end = end.offset(-1);
                     end;
                     set_lower = 1 as libc::c_int;
@@ -1275,16 +1234,16 @@ pub unsafe extern "C" fn string_to_bitarray(
                     set_higher = 1 as libc::c_int;
                 }
             }
-            bit = name2bit
-                .expect(
-                    "non-null function pointer",
-                )(begin, end.offset_from(begin) as libc::c_long as size_t);
+            bit = name2bit.expect("non-null function pointer")(
+                begin,
+                end.offset_from(begin) as libc::c_long as size_t,
+            );
             if bit < 0 as libc::c_int {
                 return bit;
             }
             let ref mut fresh32 = *ary.offset((bit / 8 as libc::c_int) as isize);
-            *fresh32 = (*fresh32 as libc::c_int
-                | (1 as libc::c_int) << bit % 8 as libc::c_int) as libc::c_char;
+            *fresh32 = (*fresh32 as libc::c_int | (1 as libc::c_int) << bit % 8 as libc::c_int)
+                as libc::c_char;
             if set_lower != 0 {
                 loop {
                     bit -= 1;
@@ -1293,7 +1252,8 @@ pub unsafe extern "C" fn string_to_bitarray(
                     }
                     let ref mut fresh33 = *ary.offset((bit / 8 as libc::c_int) as isize);
                     *fresh33 = (*fresh33 as libc::c_int
-                        | (1 as libc::c_int) << bit % 8 as libc::c_int) as libc::c_char;
+                        | (1 as libc::c_int) << bit % 8 as libc::c_int)
+                        as libc::c_char;
                 }
             } else if set_higher != 0 {
                 loop {
@@ -1303,7 +1263,8 @@ pub unsafe extern "C" fn string_to_bitarray(
                     }
                     let ref mut fresh34 = *ary.offset((bit / 8 as libc::c_int) as isize);
                     *fresh34 = (*fresh34 as libc::c_int
-                        | (1 as libc::c_int) << bit % 8 as libc::c_int) as libc::c_char;
+                        | (1 as libc::c_int) << bit % 8 as libc::c_int)
+                        as libc::c_char;
                 }
             }
             begin = 0 as *const libc::c_char;
@@ -1320,9 +1281,7 @@ pub unsafe extern "C" fn string_to_bitarray(
 pub unsafe extern "C" fn string_to_bitmask(
     list: *const libc::c_char,
     mask: *mut libc::c_ulong,
-    name2flag: Option::<
-        unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_long,
-    >,
+    name2flag: Option<unsafe extern "C" fn(*const libc::c_char, size_t) -> libc::c_long>,
 ) -> libc::c_int {
     let mut begin: *const libc::c_char = 0 as *const libc::c_char;
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
@@ -1346,10 +1305,10 @@ pub unsafe extern "C" fn string_to_bitmask(
             if end <= begin {
                 return -(1 as libc::c_int);
             }
-            flag = name2flag
-                .expect(
-                    "non-null function pointer",
-                )(begin, end.offset_from(begin) as libc::c_long as size_t);
+            flag = name2flag.expect("non-null function pointer")(
+                begin,
+                end.offset_from(begin) as libc::c_long as size_t,
+            );
             if flag < 0 as libc::c_int as libc::c_long {
                 return flag as libc::c_int;
             }
@@ -1382,7 +1341,9 @@ pub unsafe extern "C" fn parse_range(
         str = str.offset(1);
         str;
         *upper = strtol(str, &mut end, 10 as libc::c_int) as libc::c_int;
-        if *__errno_location() != 0 || end.is_null() || *end as libc::c_int != 0
+        if *__errno_location() != 0
+            || end.is_null()
+            || *end as libc::c_int != 0
             || end == str as *mut libc::c_char
         {
             return -(1 as libc::c_int);
@@ -1393,17 +1354,16 @@ pub unsafe extern "C" fn parse_range(
         if *__errno_location() != 0 || end.is_null() || end == str as *mut libc::c_char {
             return -(1 as libc::c_int);
         }
-        if *end as libc::c_int == ':' as i32
-            && *end.offset(1 as libc::c_int as isize) == 0
-        {
+        if *end as libc::c_int == ':' as i32 && *end.offset(1 as libc::c_int as isize) == 0 {
             *upper = def;
-        } else if *end as libc::c_int == '-' as i32 || *end as libc::c_int == ':' as i32
-        {
+        } else if *end as libc::c_int == '-' as i32 || *end as libc::c_int == ':' as i32 {
             str = end.offset(1 as libc::c_int as isize);
             end = 0 as *mut libc::c_char;
             *__errno_location() = 0 as libc::c_int;
             *upper = strtol(str, &mut end, 10 as libc::c_int) as libc::c_int;
-            if *__errno_location() != 0 || end.is_null() || *end as libc::c_int != 0
+            if *__errno_location() != 0
+                || end.is_null()
+                || *end as libc::c_int != 0
                 || end == str as *mut libc::c_char
             {
                 return -(1 as libc::c_int);
@@ -1420,7 +1380,8 @@ unsafe extern "C" fn next_path_segment(
     let mut p: *const libc::c_char = 0 as *const libc::c_char;
     start = str;
     *sz = 0 as libc::c_int as size_t;
-    while !start.is_null() && *start as libc::c_int == '/' as i32
+    while !start.is_null()
+        && *start as libc::c_int == '/' as i32
         && *start.offset(1 as libc::c_int as isize) as libc::c_int == '/' as i32
     {
         start = start.offset(1);
@@ -1486,55 +1447,55 @@ pub unsafe extern "C" fn strnconcat(
     if suffix.is_null() {
         return strdup(s);
     }
-    if !s.is_null() {} else {
+    if !s.is_null() {
+    } else {
         __assert_fail(
             b"s\0" as *const u8 as *const libc::c_char,
             b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
             945 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 53],
-                &[libc::c_char; 53],
-            >(b"char *strnconcat(const char *, const char *, size_t)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 53], &[libc::c_char; 53]>(
+                b"char *strnconcat(const char *, const char *, size_t)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_10751: {
-        if !s.is_null() {} else {
+        if !s.is_null() {
+        } else {
             __assert_fail(
                 b"s\0" as *const u8 as *const libc::c_char,
                 b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
                 945 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 53],
-                    &[libc::c_char; 53],
-                >(b"char *strnconcat(const char *, const char *, size_t)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 53], &[libc::c_char; 53]>(
+                    b"char *strnconcat(const char *, const char *, size_t)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
-    if !suffix.is_null() {} else {
+    if !suffix.is_null() {
+    } else {
         __assert_fail(
             b"suffix\0" as *const u8 as *const libc::c_char,
             b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
             946 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 53],
-                &[libc::c_char; 53],
-            >(b"char *strnconcat(const char *, const char *, size_t)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 53], &[libc::c_char; 53]>(
+                b"char *strnconcat(const char *, const char *, size_t)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_10714: {
-        if !suffix.is_null() {} else {
+        if !suffix.is_null() {
+        } else {
             __assert_fail(
                 b"suffix\0" as *const u8 as *const libc::c_char,
                 b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
                 946 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 53],
-                    &[libc::c_char; 53],
-                >(b"char *strnconcat(const char *, const char *, size_t)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 53], &[libc::c_char; 53]>(
+                    b"char *strnconcat(const char *, const char *, size_t)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
@@ -1542,13 +1503,19 @@ pub unsafe extern "C" fn strnconcat(
     if b > (-(1 as libc::c_int) as size_t).wrapping_sub(a) {
         return 0 as *mut libc::c_char;
     }
-    r = malloc(a.wrapping_add(b).wrapping_add(1 as libc::c_int as libc::c_ulong))
-        as *mut libc::c_char;
+    r = malloc(
+        a.wrapping_add(b)
+            .wrapping_add(1 as libc::c_int as libc::c_ulong),
+    ) as *mut libc::c_char;
     if r.is_null() {
         return 0 as *mut libc::c_char;
     }
     memcpy(r as *mut libc::c_void, s as *const libc::c_void, a);
-    memcpy(r.offset(a as isize) as *mut libc::c_void, suffix as *const libc::c_void, b);
+    memcpy(
+        r.offset(a as isize) as *mut libc::c_void,
+        suffix as *const libc::c_void,
+        b,
+    );
     *r.offset(a.wrapping_add(b) as isize) = 0 as libc::c_int as libc::c_char;
     return r;
 }
@@ -1602,13 +1569,18 @@ pub unsafe extern "C" fn strappend(
     }
     if (*a).is_null() {
         *a = strdup(b);
-        return if (*a).is_null() { -(12 as libc::c_int) } else { 0 as libc::c_int };
+        return if (*a).is_null() {
+            -(12 as libc::c_int)
+        } else {
+            0 as libc::c_int
+        };
     }
     al = strlen(*a);
     bl = strlen(b);
     tmp = realloc(
         *a as *mut libc::c_void,
-        al.wrapping_add(bl).wrapping_add(1 as libc::c_int as libc::c_ulong),
+        al.wrapping_add(bl)
+            .wrapping_add(1 as libc::c_int as libc::c_ulong),
     ) as *mut libc::c_char;
     if tmp.is_null() {
         return -(12 as libc::c_int);
@@ -1673,31 +1645,29 @@ pub unsafe extern "C" fn split(
     let mut current: *const libc::c_char = 0 as *const libc::c_char;
     current = *state;
     if *current == 0 {
-        if **state as libc::c_int == '\0' as i32 {} else {
+        if **state as libc::c_int == '\0' as i32 {
+        } else {
             __assert_fail(
                 b"**state == '\\0'\0" as *const u8 as *const libc::c_char,
                 b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
                 1070 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 62],
-                    &[libc::c_char; 62],
-                >(b"const char *split(const char **, size_t *, const char *, int)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 62], &[libc::c_char; 62]>(
+                    b"const char *split(const char **, size_t *, const char *, int)\0",
+                ))
+                .as_ptr(),
             );
         }
         'c_11392: {
-            if **state as libc::c_int == '\0' as i32 {} else {
+            if **state as libc::c_int == '\0' as i32 {
+            } else {
                 __assert_fail(
                     b"**state == '\\0'\0" as *const u8 as *const libc::c_char,
                     b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
                     1070 as libc::c_int as libc::c_uint,
-                    (*::core::mem::transmute::<
-                        &[u8; 62],
-                        &[libc::c_char; 62],
-                    >(
+                    (*::core::mem::transmute::<&[u8; 62], &[libc::c_char; 62]>(
                         b"const char *split(const char **, size_t *, const char *, int)\0",
                     ))
-                        .as_ptr(),
+                    .as_ptr(),
                 );
             }
         };
@@ -1713,7 +1683,7 @@ pub unsafe extern "C" fn split(
             b"'\"\0" as *const u8 as *const libc::c_char,
             *current as libc::c_int,
         ))
-            .is_null()
+        .is_null()
     {
         let mut quotechars: [libc::c_char; 2] = [*current, '\0' as i32 as libc::c_char];
         *l = strcspn_escaped(
@@ -1721,28 +1691,29 @@ pub unsafe extern "C" fn split(
             quotechars.as_mut_ptr(),
         );
         if *current.offset((*l).wrapping_add(1 as libc::c_int as libc::c_ulong) as isize)
-            as libc::c_int == '\0' as i32
-            || *current
-                .offset((*l).wrapping_add(1 as libc::c_int as libc::c_ulong) as isize)
-                as libc::c_int != quotechars[0 as libc::c_int as usize] as libc::c_int
-            || *current
-                .offset((*l).wrapping_add(2 as libc::c_int as libc::c_ulong) as isize)
-                as libc::c_int != 0
+            as libc::c_int
+            == '\0' as i32
+            || *current.offset((*l).wrapping_add(1 as libc::c_int as libc::c_ulong) as isize)
+                as libc::c_int
+                != quotechars[0 as libc::c_int as usize] as libc::c_int
+            || *current.offset((*l).wrapping_add(2 as libc::c_int as libc::c_ulong) as isize)
+                as libc::c_int
+                != 0
                 && (strchr(
                     separator,
-                    *current
-                        .offset(
-                            (*l).wrapping_add(2 as libc::c_int as libc::c_ulong) as isize,
-                        ) as libc::c_int,
+                    *current.offset((*l).wrapping_add(2 as libc::c_int as libc::c_ulong) as isize)
+                        as libc::c_int,
                 ))
-                    .is_null()
+                .is_null()
         {
             *state = current;
             return 0 as *const libc::c_char;
         }
         let fresh35 = current;
         current = current.offset(1);
-        *state = fresh35.offset(*l as isize).offset(2 as libc::c_int as isize);
+        *state = fresh35
+            .offset(*l as isize)
+            .offset(2 as libc::c_int as isize);
     } else if quoted != 0 {
         *l = strcspn_escaped(current, separator);
         if *current.offset(*l as isize) as libc::c_int != 0
@@ -1769,7 +1740,7 @@ pub unsafe extern "C" fn skip_fline(fp: *mut FILE) -> libc::c_int {
         if ch == '\n' as i32 {
             return 0 as libc::c_int;
         }
-    };
+    }
 }
 #[no_mangle]
 pub unsafe extern "C" fn ul_stralnumcmp(
@@ -1788,7 +1759,8 @@ pub unsafe extern "C" fn ul_stralnumcmp(
             if !(c1 as libc::c_int != '\0' as i32
                 && *(*__ctype_b_loc()).offset(c1 as libc::c_uint as libc::c_int as isize)
                     as libc::c_int
-                    & _ISalnum as libc::c_int as libc::c_ushort as libc::c_int == 0)
+                    & _ISalnum as libc::c_int as libc::c_ushort as libc::c_int
+                    == 0)
             {
                 break;
             }
@@ -1800,7 +1772,8 @@ pub unsafe extern "C" fn ul_stralnumcmp(
             if !(c2 as libc::c_int != '\0' as i32
                 && *(*__ctype_b_loc()).offset(c2 as libc::c_uint as libc::c_int as isize)
                     as libc::c_int
-                    & _ISalnum as libc::c_int as libc::c_ushort as libc::c_int == 0)
+                    & _ISalnum as libc::c_int as libc::c_ushort as libc::c_int
+                    == 0)
             {
                 break;
             }
@@ -1813,9 +1786,7 @@ pub unsafe extern "C" fn ul_stralnumcmp(
                 {
                     if 0 != 0 {
                         let mut __c: libc::c_int = c1 as libc::c_int;
-                        __res = if __c < -(128 as libc::c_int)
-                            || __c > 255 as libc::c_int
-                        {
+                        __res = if __c < -(128 as libc::c_int) || __c > 255 as libc::c_int {
                             __c
                         } else {
                             *(*__ctype_tolower_loc()).offset(__c as isize)
@@ -1837,9 +1808,7 @@ pub unsafe extern "C" fn ul_stralnumcmp(
                 {
                     if 0 != 0 {
                         let mut __c: libc::c_int = c2 as libc::c_int;
-                        __res = if __c < -(128 as libc::c_int)
-                            || __c > 255 as libc::c_int
-                        {
+                        __res = if __c < -(128 as libc::c_int) || __c > 255 as libc::c_int {
                             __c
                         } else {
                             *(*__ctype_tolower_loc()).offset(__c as isize)
@@ -1876,59 +1845,55 @@ pub unsafe extern "C" fn ul_optstr_next(
     let mut p: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut sep: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut optstr0: *mut libc::c_char = 0 as *mut libc::c_char;
-    if !optstr.is_null() {} else {
+    if !optstr.is_null() {
+    } else {
         __assert_fail(
             b"optstr\0" as *const u8 as *const libc::c_char,
             b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
             1165 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 66],
-                &[libc::c_char; 66],
-            >(b"int ul_optstr_next(char **, char **, size_t *, char **, size_t *)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 66], &[libc::c_char; 66]>(
+                b"int ul_optstr_next(char **, char **, size_t *, char **, size_t *)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_12200: {
-        if !optstr.is_null() {} else {
+        if !optstr.is_null() {
+        } else {
             __assert_fail(
                 b"optstr\0" as *const u8 as *const libc::c_char,
                 b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
                 1165 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 66],
-                    &[libc::c_char; 66],
-                >(
+                (*::core::mem::transmute::<&[u8; 66], &[libc::c_char; 66]>(
                     b"int ul_optstr_next(char **, char **, size_t *, char **, size_t *)\0",
                 ))
-                    .as_ptr(),
+                .as_ptr(),
             );
         }
     };
-    if !(*optstr).is_null() {} else {
+    if !(*optstr).is_null() {
+    } else {
         __assert_fail(
             b"*optstr\0" as *const u8 as *const libc::c_char,
             b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
             1166 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 66],
-                &[libc::c_char; 66],
-            >(b"int ul_optstr_next(char **, char **, size_t *, char **, size_t *)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 66], &[libc::c_char; 66]>(
+                b"int ul_optstr_next(char **, char **, size_t *, char **, size_t *)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_12163: {
-        if !(*optstr).is_null() {} else {
+        if !(*optstr).is_null() {
+        } else {
             __assert_fail(
                 b"*optstr\0" as *const u8 as *const libc::c_char,
                 b"lib/strutils.c\0" as *const u8 as *const libc::c_char,
                 1166 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 66],
-                    &[libc::c_char; 66],
-                >(
+                (*::core::mem::transmute::<&[u8; 66], &[libc::c_char; 66]>(
                     b"int ul_optstr_next(char **, char **, size_t *, char **, size_t *)\0",
                 ))
-                    .as_ptr(),
+                .as_ptr(),
             );
         }
     };
@@ -1963,8 +1928,7 @@ pub unsafe extern "C" fn ul_optstr_next(
             }
             if *p as libc::c_int == ',' as i32 {
                 stop = p;
-            } else if *p.offset(1 as libc::c_int as isize) as libc::c_int == '\0' as i32
-            {
+            } else if *p.offset(1 as libc::c_int as isize) as libc::c_int == '\0' as i32 {
                 stop = p.offset(1 as libc::c_int as isize);
             }
             if !(start.is_null() || stop.is_null()) {
@@ -1992,7 +1956,8 @@ pub unsafe extern "C" fn ul_optstr_next(
                     }
                     if !valsz.is_null() {
                         *valsz = (stop.offset_from(sep) as libc::c_long
-                            - 1 as libc::c_int as libc::c_long) as size_t;
+                            - 1 as libc::c_int as libc::c_long)
+                            as size_t;
                     }
                 }
                 return 0 as libc::c_int;

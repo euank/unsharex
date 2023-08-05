@@ -1,6 +1,6 @@
 use crate::exec_shell::exec_shell;
-use ::libc;
 use ::c2rust_bitfields::BitfieldStruct;
+use ::libc;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
@@ -45,24 +45,17 @@ extern "C" {
     fn fputs(__s: *const libc::c_char, __stream: *mut FILE) -> libc::c_int;
     fn ferror(__stream: *mut FILE) -> libc::c_int;
     fn fileno(__stream: *mut FILE) -> libc::c_int;
-    fn strtoul(
-        _: *const libc::c_char,
-        _: *mut *mut libc::c_char,
-        _: libc::c_int,
-    ) -> libc::c_ulong;
+    fn strtoul(_: *const libc::c_char, _: *mut *mut libc::c_char, _: libc::c_int) -> libc::c_ulong;
     fn malloc(_: libc::c_ulong) -> *mut libc::c_void;
     fn free(_: *mut libc::c_void);
-    fn atexit(__func: Option::<unsafe extern "C" fn() -> ()>) -> libc::c_int;
+    fn atexit(__func: Option<unsafe extern "C" fn() -> ()>) -> libc::c_int;
     fn exit(_: libc::c_int) -> !;
     fn close(__fd: libc::c_int) -> libc::c_int;
     fn read(__fd: libc::c_int, __buf: *mut libc::c_void, __nbytes: size_t) -> ssize_t;
     fn write(__fd: libc::c_int, __buf: *const libc::c_void, __n: size_t) -> ssize_t;
     fn chdir(__path: *const libc::c_char) -> libc::c_int;
     fn dup(__fd: libc::c_int) -> libc::c_int;
-    fn execvp(
-        __file: *const libc::c_char,
-        __argv: *const *mut libc::c_char,
-    ) -> libc::c_int;
+    fn execvp(__file: *const libc::c_char, __argv: *const *mut libc::c_char) -> libc::c_int;
     fn _exit(_: libc::c_int) -> !;
     fn getpid() -> __pid_t;
     fn geteuid() -> __uid_t;
@@ -78,11 +71,7 @@ extern "C" {
         __set: *const sigset_t,
         __oset: *mut sigset_t,
     ) -> libc::c_int;
-    fn waitpid(
-        __pid: __pid_t,
-        __stat_loc: *mut libc::c_int,
-        __options: libc::c_int,
-    ) -> __pid_t;
+    fn waitpid(__pid: __pid_t, __stat_loc: *mut libc::c_int, __options: libc::c_int) -> __pid_t;
     fn sigaddset(__set: *mut sigset_t, __signo: libc::c_int) -> libc::c_int;
     fn sigemptyset(__set: *mut sigset_t) -> libc::c_int;
     fn signal(__sig: libc::c_int, __handler: __sighandler_t) -> __sighandler_t;
@@ -97,10 +86,7 @@ extern "C" {
     fn stat(__file: *const libc::c_char, __buf: *mut stat) -> libc::c_int;
     fn prctl(__option: libc::c_int, _: ...) -> libc::c_int;
     fn setgroups(__n: size_t, __groups: *const __gid_t) -> libc::c_int;
-    fn setlocale(
-        __category: libc::c_int,
-        __locale: *const libc::c_char,
-    ) -> *mut libc::c_char;
+    fn setlocale(__category: libc::c_int, __locale: *const libc::c_char) -> *mut libc::c_char;
     fn dcgettext(
         __domainname: *const libc::c_char,
         __msgid: *const libc::c_char,
@@ -111,11 +97,7 @@ extern "C" {
         __domainname: *const libc::c_char,
         __dirname: *const libc::c_char,
     ) -> *mut libc::c_char;
-    fn memset(
-        _: *mut libc::c_void,
-        _: libc::c_int,
-        _: libc::c_ulong,
-    ) -> *mut libc::c_void;
+    fn memset(_: *mut libc::c_void, _: libc::c_int, _: libc::c_ulong) -> *mut libc::c_void;
     fn strcmp(_: *const libc::c_char, _: *const libc::c_char) -> libc::c_int;
     fn strdup(_: *const libc::c_char) -> *mut libc::c_char;
     fn strchr(_: *const libc::c_char, _: libc::c_int) -> *mut libc::c_char;
@@ -127,10 +109,7 @@ extern "C" {
         __function: *const libc::c_char,
     ) -> !;
     fn open(__file: *const libc::c_char, __oflag: libc::c_int, _: ...) -> libc::c_int;
-    fn nanosleep(
-        __requested_time: *const timespec,
-        __remaining: *mut timespec,
-    ) -> libc::c_int;
+    fn nanosleep(__requested_time: *const timespec, __remaining: *mut timespec) -> libc::c_int;
     fn err(__status: libc::c_int, __format: *const libc::c_char, _: ...) -> !;
     fn warnx(__format: *const libc::c_char, _: ...);
     fn warn(__format: *const libc::c_char, _: ...);
@@ -151,14 +130,8 @@ extern "C" {
         errmesg: *const libc::c_char,
         up: uint64_t,
     ) -> uint64_t;
-    fn xgetpwnam(
-        username: *const libc::c_char,
-        pwdbuf: *mut *mut libc::c_char,
-    ) -> *mut passwd;
-    fn xgetgrnam(
-        groupname: *const libc::c_char,
-        grpbuf: *mut *mut libc::c_char,
-    ) -> *mut group;
+    fn xgetpwnam(username: *const libc::c_char, pwdbuf: *mut *mut libc::c_char) -> *mut passwd;
+    fn xgetgrnam(groupname: *const libc::c_char, grpbuf: *mut *mut libc::c_char) -> *mut group;
     fn xgetpwuid(uid: uid_t, pwdbuf: *mut *mut libc::c_char) -> *mut passwd;
 }
 pub type __builtin_va_list = [__va_list_tag; 1];
@@ -264,7 +237,7 @@ pub type int64_t = __int64_t;
 pub type sigset_t = __sigset_t;
 pub type uint32_t = __uint32_t;
 pub type uint64_t = __uint64_t;
-pub type __sighandler_t = Option::<unsafe extern "C" fn(libc::c_int) -> ()>;
+pub type __sighandler_t = Option<unsafe extern "C" fn(libc::c_int) -> ()>;
 pub type C2RustUnnamed = libc::c_int;
 pub const MS_NOUSER: C2RustUnnamed = -2147483648;
 pub const MS_ACTIVE: C2RustUnnamed = 1073741824;
@@ -407,7 +380,8 @@ unsafe extern "C" fn flush_standard_stream(stream: *mut FILE) -> libc::c_int {
             || {
                 fd = dup(fd);
                 fd < 0 as libc::c_int
-            } || close(fd) != 0 as libc::c_int)
+            }
+            || close(fd) != 0 as libc::c_int)
         {
             return 0 as libc::c_int;
         }
@@ -424,21 +398,17 @@ unsafe extern "C" fn close_stdout() {
         && !(*__errno_location() == 32 as libc::c_int)
     {
         if *__errno_location() != 0 {
-            warn(
-                dcgettext(
-                    0 as *const libc::c_char,
-                    b"write error\0" as *const u8 as *const libc::c_char,
-                    5 as libc::c_int,
-                ),
-            );
+            warn(dcgettext(
+                0 as *const libc::c_char,
+                b"write error\0" as *const u8 as *const libc::c_char,
+                5 as libc::c_int,
+            ));
         } else {
-            warnx(
-                dcgettext(
-                    0 as *const libc::c_char,
-                    b"write error\0" as *const u8 as *const libc::c_char,
-                    5 as libc::c_int,
-                ),
-            );
+            warnx(dcgettext(
+                0 as *const libc::c_char,
+                b"write error\0" as *const u8 as *const libc::c_char,
+                5 as libc::c_int,
+            ));
         }
         _exit(1 as libc::c_int);
     }
@@ -469,29 +439,29 @@ unsafe extern "C" fn xmalloc(size: size_t) -> *mut libc::c_void {
 #[inline]
 unsafe extern "C" fn xstrdup(str: *const libc::c_char) -> *mut libc::c_char {
     let mut ret: *mut libc::c_char = 0 as *mut libc::c_char;
-    if !str.is_null() {} else {
+    if !str.is_null() {
+    } else {
         __assert_fail(
             b"str\0" as *const u8 as *const libc::c_char,
             b"./include/xalloc.h\0" as *const u8 as *const libc::c_char,
             80 as libc::c_int as libc::c_uint,
-            (*::core::mem::transmute::<
-                &[u8; 28],
-                &[libc::c_char; 28],
-            >(b"char *xstrdup(const char *)\0"))
-                .as_ptr(),
+            (*::core::mem::transmute::<&[u8; 28], &[libc::c_char; 28]>(
+                b"char *xstrdup(const char *)\0",
+            ))
+            .as_ptr(),
         );
     }
     'c_7543: {
-        if !str.is_null() {} else {
+        if !str.is_null() {
+        } else {
             __assert_fail(
                 b"str\0" as *const u8 as *const libc::c_char,
                 b"./include/xalloc.h\0" as *const u8 as *const libc::c_char,
                 80 as libc::c_int as libc::c_uint,
-                (*::core::mem::transmute::<
-                    &[u8; 28],
-                    &[libc::c_char; 28],
-                >(b"char *xstrdup(const char *)\0"))
-                    .as_ptr(),
+                (*::core::mem::transmute::<&[u8; 28], &[libc::c_char; 28]>(
+                    b"char *xstrdup(const char *)\0",
+                ))
+                .as_ptr(),
             );
         }
     };
@@ -533,16 +503,14 @@ unsafe extern "C" fn write_all(
         *__errno_location() = 0 as libc::c_int;
         tmp = write(fd, buf, count);
         if tmp > 0 as libc::c_int as libc::c_long {
-            count = (count as libc::c_ulong).wrapping_sub(tmp as libc::c_ulong) as size_t
-                as size_t;
+            count = (count as libc::c_ulong).wrapping_sub(tmp as libc::c_ulong) as size_t as size_t;
             if count != 0 {
-                buf = (buf as *const libc::c_char).offset(tmp as isize)
-                    as *const libc::c_void;
+                buf = (buf as *const libc::c_char).offset(tmp as isize) as *const libc::c_void;
             }
         } else if *__errno_location() != 4 as libc::c_int
             && *__errno_location() != 11 as libc::c_int
         {
-            return -(1 as libc::c_int)
+            return -(1 as libc::c_int);
         }
         if *__errno_location() == 11 as libc::c_int {
             xusleep(250000 as libc::c_int as useconds_t);
@@ -563,8 +531,7 @@ unsafe extern "C" fn read_all(
     while count > 0 as libc::c_int as libc::c_ulong {
         ret = read(fd, buf as *mut libc::c_void, count);
         if ret < 0 as libc::c_int as libc::c_long {
-            if (*__errno_location() == 11 as libc::c_int
-                || *__errno_location() == 4 as libc::c_int)
+            if (*__errno_location() == 11 as libc::c_int || *__errno_location() == 4 as libc::c_int)
                 && {
                     let fresh0 = tries;
                     tries = tries + 1;
@@ -573,15 +540,18 @@ unsafe extern "C" fn read_all(
             {
                 xusleep(250000 as libc::c_int as useconds_t);
             } else {
-                return if c != 0 { c } else { -(1 as libc::c_int) as libc::c_long }
+                return if c != 0 {
+                    c
+                } else {
+                    -(1 as libc::c_int) as libc::c_long
+                };
             }
         } else {
             if ret == 0 as libc::c_int as libc::c_long {
                 return c;
             }
             tries = 0 as libc::c_int;
-            count = (count as libc::c_ulong).wrapping_sub(ret as libc::c_ulong) as size_t
-                as size_t;
+            count = (count as libc::c_ulong).wrapping_sub(ret as libc::c_ulong) as size_t as size_t;
             buf = buf.offset(ret as isize);
             c += ret;
         }
@@ -685,24 +655,20 @@ unsafe extern "C" fn setgroups_str2id(str: *const libc::c_char) -> libc::c_int {
         1 as libc::c_int,
         dcgettext(
             0 as *const libc::c_char,
-            b"unsupported --setgroups argument '%s'\0" as *const u8
-                as *const libc::c_char,
+            b"unsupported --setgroups argument '%s'\0" as *const u8 as *const libc::c_char,
             5 as libc::c_int,
         ),
         str,
     );
 }
 unsafe extern "C" fn setgroups_control(action: libc::c_int) {
-    let file: *const libc::c_char = b"/proc/self/setgroups\0" as *const u8
-        as *const libc::c_char;
+    let file: *const libc::c_char = b"/proc/self/setgroups\0" as *const u8 as *const libc::c_char;
     let mut cmd: *const libc::c_char = 0 as *const libc::c_char;
     let mut fd: libc::c_int = 0;
     if action < 0 as libc::c_int
         || action as size_t
             >= (::core::mem::size_of::<[*const libc::c_char; 2]>() as libc::c_ulong)
-                .wrapping_div(
-                    ::core::mem::size_of::<*const libc::c_char>() as libc::c_ulong,
-                )
+                .wrapping_div(::core::mem::size_of::<*const libc::c_char>() as libc::c_ulong)
                 .wrapping_add(::core::mem::size_of::<C2RustUnnamed_2>() as libc::c_ulong)
     {
         return;
@@ -736,11 +702,7 @@ unsafe extern "C" fn setgroups_control(action: libc::c_int) {
     }
     close(fd);
 }
-unsafe extern "C" fn map_id(
-    file: *const libc::c_char,
-    from: uint32_t,
-    to: uint32_t,
-) {
+unsafe extern "C" fn map_id(file: *const libc::c_char, from: uint32_t, to: uint32_t) {
     let mut buf: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut fd: libc::c_int = 0;
     fd = open(file, 0o1 as libc::c_int);
@@ -788,8 +750,7 @@ unsafe extern "C" fn parse_propagation(str: *const libc::c_char) -> libc::c_ulon
         {
             let init = prop_opts {
                 name: b"private\0" as *const u8 as *const libc::c_char,
-                flag: (MS_REC as libc::c_int | MS_PRIVATE as libc::c_int)
-                    as libc::c_ulong,
+                flag: (MS_REC as libc::c_int | MS_PRIVATE as libc::c_int) as libc::c_ulong,
             };
             init
         },
@@ -846,17 +807,13 @@ unsafe extern "C" fn set_propagation(flags: libc::c_ulong) {
             1 as libc::c_int,
             dcgettext(
                 0 as *const libc::c_char,
-                b"cannot change root filesystem propagation\0" as *const u8
-                    as *const libc::c_char,
+                b"cannot change root filesystem propagation\0" as *const u8 as *const libc::c_char,
                 5 as libc::c_int,
             ),
         );
     }
 }
-unsafe extern "C" fn set_ns_target(
-    type_0: libc::c_int,
-    path: *const libc::c_char,
-) -> libc::c_int {
+unsafe extern "C" fn set_ns_target(type_0: libc::c_int, path: *const libc::c_char) -> libc::c_int {
     let mut ns: *mut namespace_file = 0 as *mut namespace_file;
     ns = namespace_files.as_mut_ptr();
     while !((*ns).name).is_null() {
@@ -923,9 +880,18 @@ unsafe extern "C" fn get_mnt_ino(pid: pid_t) -> ino_t {
         st_size: 0,
         st_blksize: 0,
         st_blocks: 0,
-        st_atim: timespec { tv_sec: 0, tv_nsec: 0 },
-        st_mtim: timespec { tv_sec: 0, tv_nsec: 0 },
-        st_ctim: timespec { tv_sec: 0, tv_nsec: 0 },
+        st_atim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
+        st_mtim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
+        st_ctim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
         __glibc_reserved: [0; 3],
     };
     let mut path: [libc::c_char; 4096] = [0; 4096];
@@ -968,15 +934,12 @@ unsafe extern "C" fn settime(offset: int64_t, clk_id: clockid_t) {
             1 as libc::c_int,
             dcgettext(
                 0 as *const libc::c_char,
-                b"failed to open /proc/self/timens_offsets\0" as *const u8
-                    as *const libc::c_char,
+                b"failed to open /proc/self/timens_offsets\0" as *const u8 as *const libc::c_char,
                 5 as libc::c_int,
             ),
         );
     }
-    if write(fd, buf.as_mut_ptr() as *const libc::c_void, len as size_t)
-        != len as libc::c_long
-    {
+    if write(fd, buf.as_mut_ptr() as *const libc::c_void, len as size_t) != len as libc::c_long {
         err(
             1 as libc::c_int,
             dcgettext(
@@ -1013,7 +976,7 @@ unsafe extern "C" fn waitchild(pid: libc::c_int) {
         if !(rc < 0 as libc::c_int) {
             break;
         }
-    };
+    }
 }
 unsafe extern "C" fn sync_with_child(pid: pid_t, fd: libc::c_int) {
     let mut ch: uint64_t = 0x6 as libc::c_int as uint64_t;
@@ -1055,7 +1018,8 @@ unsafe extern "C" fn fork_and_wait(fd: *mut libc::c_int) -> pid_t {
             *fd,
             &mut ch as *mut uint64_t as *mut libc::c_char,
             ::core::mem::size_of::<uint64_t>() as libc::c_ulong,
-        ) as libc::c_ulong != ::core::mem::size_of::<uint64_t>() as libc::c_ulong
+        ) as libc::c_ulong
+            != ::core::mem::size_of::<uint64_t>() as libc::c_ulong
             || ch != 0x6 as libc::c_int as libc::c_ulong
         {
             err(
@@ -1085,10 +1049,7 @@ unsafe extern "C" fn bind_ns_files_from_child(fd: *mut libc::c_int) -> pid_t {
     bind_ns_files(ppid);
     exit(0 as libc::c_int);
 }
-unsafe extern "C" fn get_user(
-    s: *const libc::c_char,
-    err_0: *const libc::c_char,
-) -> uid_t {
+unsafe extern "C" fn get_user(s: *const libc::c_char, err_0: *const libc::c_char) -> uid_t {
     let mut pw: *mut passwd = 0 as *mut passwd;
     let mut buf: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut ret: uid_t = 0;
@@ -1109,10 +1070,7 @@ unsafe extern "C" fn get_user(
     }
     return ret;
 }
-unsafe extern "C" fn get_group(
-    s: *const libc::c_char,
-    err_0: *const libc::c_char,
-) -> gid_t {
+unsafe extern "C" fn get_group(s: *const libc::c_char, err_0: *const libc::c_char) -> gid_t {
     let mut gr: *mut group = 0 as *mut group;
     let mut buf: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut ret: gid_t = 0;
@@ -1136,8 +1094,7 @@ unsafe extern "C" fn get_group(
 unsafe extern "C" fn get_map_range(s: *const libc::c_char) -> *mut map_range {
     let mut end: libc::c_int = 0;
     let mut ret: *mut map_range = 0 as *mut map_range;
-    ret = xmalloc(::core::mem::size_of::<map_range>() as libc::c_ulong)
-        as *mut map_range;
+    ret = xmalloc(::core::mem::size_of::<map_range>() as libc::c_ulong) as *mut map_range;
     if sscanf(
         s,
         b"%u:%u:%u%n\0" as *const u8 as *const libc::c_char,
@@ -1145,7 +1102,8 @@ unsafe extern "C" fn get_map_range(s: *const libc::c_char) -> *mut map_range {
         &mut (*ret).outer as *mut libc::c_uint,
         &mut (*ret).count as *mut libc::c_uint,
         &mut end as *mut libc::c_int,
-    ) >= 3 as libc::c_int && *s.offset(end as isize) == 0
+    ) >= 3 as libc::c_int
+        && *s.offset(end as isize) == 0
     {
         return ret;
     }
@@ -1156,7 +1114,8 @@ unsafe extern "C" fn get_map_range(s: *const libc::c_char) -> *mut map_range {
         &mut (*ret).inner as *mut libc::c_uint,
         &mut (*ret).count as *mut libc::c_uint,
         &mut end as *mut libc::c_int,
-    ) >= 3 as libc::c_int && *s.offset(end as isize) == 0
+    ) >= 3 as libc::c_int
+        && *s.offset(end as isize) == 0
     {
         return ret;
     }
@@ -1170,18 +1129,14 @@ unsafe extern "C" fn get_map_range(s: *const libc::c_char) -> *mut map_range {
         s,
     );
 }
-unsafe extern "C" fn read_subid_range(
-    filename: *mut libc::c_char,
-    uid: uid_t,
-) -> *mut map_range {
+unsafe extern "C" fn read_subid_range(filename: *mut libc::c_char, uid: uid_t) -> *mut map_range {
     let mut line: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut pwbuf: *mut libc::c_char = 0 as *mut libc::c_char;
     let mut idmap: *mut FILE = 0 as *mut FILE;
     let mut n: size_t = 0 as libc::c_int as size_t;
     let mut pw: *mut passwd = 0 as *mut passwd;
     let mut map: *mut map_range = 0 as *mut map_range;
-    map = xmalloc(::core::mem::size_of::<map_range>() as libc::c_ulong)
-        as *mut map_range;
+    map = xmalloc(::core::mem::size_of::<map_range>() as libc::c_ulong) as *mut map_range;
     (*map).inner = -(1 as libc::c_int) as libc::c_uint;
     pw = xgetpwuid(uid, &mut pwbuf);
     if pw.is_null() {
@@ -1227,8 +1182,7 @@ unsafe extern "C" fn read_subid_range(
             continue;
         }
         *rest = '\0' as i32 as libc::c_char;
-        (*map)
-            .outer = str2unum_or_err(
+        (*map).outer = str2unum_or_err(
             s,
             10 as libc::c_int,
             dcgettext(
@@ -1245,8 +1199,7 @@ unsafe extern "C" fn read_subid_range(
         if !rest.is_null() {
             *rest = '\0' as i32 as libc::c_char;
         }
-        (*map)
-            .count = str2unum_or_err(
+        (*map).count = str2unum_or_err(
             s,
             10 as libc::c_int,
             dcgettext(
@@ -1391,7 +1344,11 @@ unsafe extern "C" fn map_ids(
         let mut _min2: libc::c_uint = (*map).count;
         &mut _min1 as *mut libc::c_uint;
         &mut _min2 as *mut libc::c_uint;
-        if _min1 < _min2 { _min1 } else { _min2 }
+        if _min1 < _min2 {
+            _min1
+        } else {
+            _min2
+        }
     };
     inner_offset = {
         let mut _min1: libc::c_uint = if inner > (*map).inner {
@@ -1402,43 +1359,47 @@ unsafe extern "C" fn map_ids(
         let mut _min2: libc::c_uint = (*map).count;
         &mut _min1 as *mut libc::c_uint;
         &mut _min2 as *mut libc::c_uint;
-        if _min1 < _min2 { _min1 } else { _min2 }
+        if _min1 < _min2 {
+            _min1
+        } else {
+            _min2
+        }
     };
     lo.outer = (*map).outer;
     lo.inner = (*map).inner;
-    lo
-        .count = {
+    lo.count = {
         let mut _min1: libc::c_uint = inner_offset;
         let mut _min2: libc::c_uint = outer_offset;
         &mut _min1 as *mut libc::c_uint;
         &mut _min2 as *mut libc::c_uint;
-        if _min1 < _min2 { _min1 } else { _min2 }
+        if _min1 < _min2 {
+            _min1
+        } else {
+            _min2
+        }
     };
     mid.outer = (lo.outer).wrapping_add(lo.count);
-    mid
-        .outer = (mid.outer)
-        .wrapping_add((mid.outer == outer) as libc::c_int as libc::c_uint);
+    mid.outer = (mid.outer).wrapping_add((mid.outer == outer) as libc::c_int as libc::c_uint);
     mid.inner = (lo.inner).wrapping_add(lo.count);
-    mid
-        .inner = (mid.inner)
-        .wrapping_add((mid.inner == inner) as libc::c_int as libc::c_uint);
-    mid
-        .count = {
+    mid.inner = (mid.inner).wrapping_add((mid.inner == inner) as libc::c_int as libc::c_uint);
+    mid.count = {
         let mut _a: libc::c_uint = outer_offset;
         let mut _b: libc::c_uint = inner_offset;
         &mut _a as *mut libc::c_uint;
         &mut _b as *mut libc::c_uint;
-        if _a > _b { _a.wrapping_sub(_b) } else { _b.wrapping_sub(_a) }
+        if _a > _b {
+            _a.wrapping_sub(_b)
+        } else {
+            _b.wrapping_sub(_a)
+        }
     };
     hi.outer = (mid.outer).wrapping_add(mid.count);
-    hi
-        .outer = (hi.outer)
-        .wrapping_add((hi.outer == outer) as libc::c_int as libc::c_uint);
+    hi.outer = (hi.outer).wrapping_add((hi.outer == outer) as libc::c_int as libc::c_uint);
     hi.inner = (mid.inner).wrapping_add(mid.count);
-    hi
-        .inner = (hi.inner)
-        .wrapping_add((hi.inner == inner) as libc::c_int as libc::c_uint);
-    hi.count = ((*map).count).wrapping_sub(lo.count).wrapping_sub(mid.count);
+    hi.inner = (hi.inner).wrapping_add((hi.inner == inner) as libc::c_int as libc::c_uint);
+    hi.count = ((*map).count)
+        .wrapping_sub(lo.count)
+        .wrapping_sub(mid.count);
     snprintf(
         (args[j as usize]).as_mut_ptr(),
         ::core::mem::size_of::<[libc::c_char; 32]>() as libc::c_ulong,
@@ -1463,8 +1424,7 @@ unsafe extern "C" fn map_ids(
     argv[fresh14 as usize] = (args[fresh13 as usize]).as_mut_ptr();
     let fresh15 = i;
     i = i + 1;
-    argv[fresh15
-        as usize] = b"1\0" as *const u8 as *const libc::c_char as *mut libc::c_char;
+    argv[fresh15 as usize] = b"1\0" as *const u8 as *const libc::c_char as *mut libc::c_char;
     if lo.count != 0 {
         snprintf(
             (args[j as usize]).as_mut_ptr(),
@@ -1652,8 +1612,7 @@ unsafe extern "C" fn usage() -> ! {
         out,
         dcgettext(
             0 as *const libc::c_char,
-            b" %s [options] [<program> [<argument>...]]\n\0" as *const u8
-                as *const libc::c_char,
+            b" %s [options] [<program> [<argument>...]]\n\0" as *const u8 as *const libc::c_char,
             5 as libc::c_int,
         ),
         program_invocation_short_name,
@@ -1662,8 +1621,8 @@ unsafe extern "C" fn usage() -> ! {
     fputs(
         dcgettext(
             0 as *const libc::c_char,
-            b"Run a program with some namespaces unshared from the parent.\n\0"
-                as *const u8 as *const libc::c_char,
+            b"Run a program with some namespaces unshared from the parent.\n\0" as *const u8
+                as *const libc::c_char,
             5 as libc::c_int,
         ),
         out,
@@ -1688,8 +1647,8 @@ unsafe extern "C" fn usage() -> ! {
     fputs(
         dcgettext(
             0 as *const libc::c_char,
-            b" -u, --uts[=<file>]        unshare UTS namespace (hostname etc)\n\0"
-                as *const u8 as *const libc::c_char,
+            b" -u, --uts[=<file>]        unshare UTS namespace (hostname etc)\n\0" as *const u8
+                as *const libc::c_char,
             5 as libc::c_int,
         ),
         out,
@@ -1752,8 +1711,8 @@ unsafe extern "C" fn usage() -> ! {
     fputs(
         dcgettext(
             0 as *const libc::c_char,
-            b" -f, --fork                fork before launching <program>\n\0"
-                as *const u8 as *const libc::c_char,
+            b" -f, --fork                fork before launching <program>\n\0" as *const u8
+                as *const libc::c_char,
             5 as libc::c_int,
         ),
         out,
@@ -1761,8 +1720,8 @@ unsafe extern "C" fn usage() -> ! {
     fputs(
         dcgettext(
             0 as *const libc::c_char,
-            b" --map-user=<uid>|<name>   map current user to uid (implies --user)\n\0"
-                as *const u8 as *const libc::c_char,
+            b" --map-user=<uid>|<name>   map current user to uid (implies --user)\n\0" as *const u8
+                as *const libc::c_char,
             5 as libc::c_int,
         ),
         out,
@@ -1770,8 +1729,8 @@ unsafe extern "C" fn usage() -> ! {
     fputs(
         dcgettext(
             0 as *const libc::c_char,
-            b" --map-group=<gid>|<name>  map current group to gid (implies --user)\n\0"
-                as *const u8 as *const libc::c_char,
+            b" --map-group=<gid>|<name>  map current group to gid (implies --user)\n\0" as *const u8
+                as *const libc::c_char,
             5 as libc::c_int,
         ),
         out,
@@ -1779,8 +1738,8 @@ unsafe extern "C" fn usage() -> ! {
     fputs(
         dcgettext(
             0 as *const libc::c_char,
-            b" -r, --map-root-user       map current user to root (implies --user)\n\0"
-                as *const u8 as *const libc::c_char,
+            b" -r, --map-root-user       map current user to root (implies --user)\n\0" as *const u8
+                as *const libc::c_char,
             5 as libc::c_int,
         ),
         out,
@@ -1880,8 +1839,8 @@ unsafe extern "C" fn usage() -> ! {
     fputs(
         dcgettext(
             0 as *const libc::c_char,
-            b" -w, --wd=<dir>            change working directory to <dir>\n\0"
-                as *const u8 as *const libc::c_char,
+            b" -w, --wd=<dir>            change working directory to <dir>\n\0" as *const u8
+                as *const libc::c_char,
             5 as libc::c_int,
         ),
         out,
@@ -1949,10 +1908,7 @@ unsafe extern "C" fn usage() -> ! {
     exit(0 as libc::c_int);
 }
 
-unsafe fn main_0(
-    argc: libc::c_int,
-    argv: *mut *mut libc::c_char,
-) -> i32 {
+unsafe fn main_0(argc: libc::c_int, argv: *mut *mut libc::c_char) -> i32 {
     static mut longopts: [option; 30] = [
         {
             let init = option {
@@ -2246,8 +2202,8 @@ unsafe fn main_0(
     let mut sigset: sigset_t = sigset_t { __val: [0; 16] };
     let mut oldsigset: sigset_t = sigset_t { __val: [0; 16] };
     let mut status: libc::c_int = 0;
-    let mut propagation: libc::c_ulong = (MS_REC as libc::c_int
-        | MS_PRIVATE as libc::c_int) as libc::c_ulong;
+    let mut propagation: libc::c_ulong =
+        (MS_REC as libc::c_int | MS_PRIVATE as libc::c_int) as libc::c_ulong;
     let mut force_uid: libc::c_int = 0 as libc::c_int;
     let mut force_gid: libc::c_int = 0 as libc::c_int;
     let mut uid: uid_t = 0 as libc::c_int as uid_t;
@@ -2266,17 +2222,23 @@ unsafe fn main_0(
             b"/usr/share/locale\0" as *const u8 as *const libc::c_char,
         );
     }
-    unsafe { textdomain(b"util-linux\0" as *const u8 as *const libc::c_char); }
-    unsafe { close_stdout_atexit(); }
+    unsafe {
+        textdomain(b"util-linux\0" as *const u8 as *const libc::c_char);
+    }
+    unsafe {
+        close_stdout_atexit();
+    }
     let mut optarg: *mut libc::c_char = 0 as *mut i8;
     loop {
-        c = unsafe { getopt_long(
-            argc,
-            argv as *const *mut libc::c_char,
-            b"+fhVmuinpCTUrR:w:S:G:c\0" as *const u8 as *const libc::c_char,
-            longopts.as_ptr(),
-            0 as *mut libc::c_int,
-        ) };
+        c = unsafe {
+            getopt_long(
+                argc,
+                argv as *const *mut libc::c_char,
+                b"+fhVmuinpCTUrR:w:S:G:c\0" as *const u8 as *const libc::c_char,
+                longopts.as_ptr(),
+                0 as *mut libc::c_int,
+            )
+        };
         if !(c != -(1 as libc::c_int)) {
             break;
         }
@@ -2376,8 +2338,7 @@ unsafe fn main_0(
                 unshare_flags |= 0x10000000 as libc::c_int;
                 if strcmp(optarg, b"auto\0" as *const u8 as *const libc::c_char) == 0 {
                     usermap = read_subid_range(
-                        b"/etc/subuid\0" as *const u8 as *const libc::c_char
-                            as *mut libc::c_char,
+                        b"/etc/subuid\0" as *const u8 as *const libc::c_char as *mut libc::c_char,
                         real_euid,
                     );
                 } else {
@@ -2388,8 +2349,7 @@ unsafe fn main_0(
                 unshare_flags |= 0x10000000 as libc::c_int;
                 if strcmp(optarg, b"auto\0" as *const u8 as *const libc::c_char) == 0 {
                     groupmap = read_subid_range(
-                        b"/etc/subgid\0" as *const u8 as *const libc::c_char
-                            as *mut libc::c_char,
+                        b"/etc/subgid\0" as *const u8 as *const libc::c_char as *mut libc::c_char,
                         real_euid,
                     );
                 } else {
@@ -2399,13 +2359,11 @@ unsafe fn main_0(
             139 => {
                 unshare_flags |= 0x10000000 as libc::c_int;
                 usermap = read_subid_range(
-                    b"/etc/subuid\0" as *const u8 as *const libc::c_char
-                        as *mut libc::c_char,
+                    b"/etc/subuid\0" as *const u8 as *const libc::c_char as *mut libc::c_char,
                     real_euid,
                 );
                 groupmap = read_subid_range(
-                    b"/etc/subgid\0" as *const u8 as *const libc::c_char
-                        as *mut libc::c_char,
+                    b"/etc/subgid\0" as *const u8 as *const libc::c_char as *mut libc::c_char,
                     real_euid,
                 );
             }
@@ -2480,8 +2438,7 @@ unsafe fn main_0(
                     10 as libc::c_int,
                     dcgettext(
                         0 as *const libc::c_char,
-                        b"failed to parse monotonic offset\0" as *const u8
-                            as *const libc::c_char,
+                        b"failed to parse monotonic offset\0" as *const u8 as *const libc::c_char,
                         5 as libc::c_int,
                     ),
                     0 as libc::c_int as int64_t,
@@ -2495,8 +2452,7 @@ unsafe fn main_0(
                     10 as libc::c_int,
                     dcgettext(
                         0 as *const libc::c_char,
-                        b"failed to parse boottime offset\0" as *const u8
-                            as *const libc::c_char,
+                        b"failed to parse boottime offset\0" as *const u8 as *const libc::c_char,
                         5 as libc::c_int,
                     ),
                     0 as libc::c_int as int64_t,
@@ -2534,9 +2490,7 @@ unsafe fn main_0(
             }
         }
     }
-    if (force_monotonic != 0 || force_boottime != 0)
-        && unshare_flags & 0x80 as libc::c_int == 0
-    {
+    if (force_monotonic != 0 || force_boottime != 0) && unshare_flags & 0x80 as libc::c_int == 0 {
         errx(
             1 as libc::c_int,
             dcgettext(
@@ -2552,13 +2506,7 @@ unsafe fn main_0(
         pid_bind = bind_ns_files_from_child(&mut fd_bind);
     }
     if !usermap.is_null() || !groupmap.is_null() {
-        pid_idmap = map_ids_from_child(
-            &mut fd_idmap,
-            mapuser,
-            usermap,
-            mapgroup,
-            groupmap,
-        );
+        pid_idmap = map_ids_from_child(&mut fd_idmap, mapuser, usermap, mapgroup, groupmap);
     }
     if -(1 as libc::c_int) == unshare(unshare_flags) {
         err(
@@ -2583,8 +2531,7 @@ unsafe fn main_0(
         if sigemptyset(&mut sigset) != 0 as libc::c_int
             || sigaddset(&mut sigset, 2 as libc::c_int) != 0 as libc::c_int
             || sigaddset(&mut sigset, 15 as libc::c_int) != 0 as libc::c_int
-            || sigprocmask(0 as libc::c_int, &mut sigset, &mut oldsigset)
-                != 0 as libc::c_int
+            || sigprocmask(0 as libc::c_int, &mut sigset, &mut oldsigset) != 0 as libc::c_int
         {
             err(
                 1 as libc::c_int,
@@ -2621,14 +2568,12 @@ unsafe fn main_0(
                 );
             }
             0 => {
-                if sigprocmask(2 as libc::c_int, &mut oldsigset, 0 as *mut sigset_t) != 0
-                {
+                if sigprocmask(2 as libc::c_int, &mut oldsigset, 0 as *mut sigset_t) != 0 {
                     err(
                         1 as libc::c_int,
                         dcgettext(
                             0 as *const libc::c_char,
-                            b"sigprocmask restore failed\0" as *const u8
-                                as *const libc::c_char,
+                            b"sigprocmask restore failed\0" as *const u8 as *const libc::c_char,
                             5 as libc::c_int,
                         ),
                     );
@@ -2661,15 +2606,15 @@ unsafe fn main_0(
         if status & 0x7f as libc::c_int == 0 as libc::c_int {
             return (status & 0xff00 as libc::c_int) >> 8 as libc::c_int;
         }
-        if ((status & 0x7f as libc::c_int) + 1 as libc::c_int) as libc::c_schar
-            as libc::c_int >> 1 as libc::c_int > 0 as libc::c_int
+        if ((status & 0x7f as libc::c_int) + 1 as libc::c_int) as libc::c_schar as libc::c_int
+            >> 1 as libc::c_int
+            > 0 as libc::c_int
         {
             let termsig: libc::c_int = status & 0x7f as libc::c_int;
             if signal(termsig, None)
-                == ::core::mem::transmute::<
-                    libc::intptr_t,
-                    __sighandler_t,
-                >(-(1 as libc::c_int) as libc::intptr_t)
+                == ::core::mem::transmute::<libc::intptr_t, __sighandler_t>(
+                    -(1 as libc::c_int) as libc::intptr_t,
+                )
                 || sigemptyset(&mut sigset) != 0 as libc::c_int
                 || sigaddset(&mut sigset, termsig) != 0 as libc::c_int
                 || sigprocmask(1 as libc::c_int, &mut sigset, 0 as *mut sigset_t)
@@ -2679,8 +2624,7 @@ unsafe fn main_0(
                     1 as libc::c_int,
                     dcgettext(
                         0 as *const libc::c_char,
-                        b"sigprocmask unblock failed\0" as *const u8
-                            as *const libc::c_char,
+                        b"sigprocmask unblock failed\0" as *const u8 as *const libc::c_char,
                         5 as libc::c_int,
                     ),
                 );
@@ -2698,19 +2642,20 @@ unsafe fn main_0(
     }
     if kill_child_signo != 0 as libc::c_int {
         if prctl(1 as libc::c_int, kill_child_signo) < 0 as libc::c_int {
-            err(1 as libc::c_int, b"prctl failed\0" as *const u8 as *const libc::c_char);
+            err(
+                1 as libc::c_int,
+                b"prctl failed\0" as *const u8 as *const libc::c_char,
+            );
         }
         if fd_parent_pid != -(1 as libc::c_int) {
-            let mut pollfds: [pollfd; 1] = [
-                {
-                    let init = pollfd {
-                        fd: fd_parent_pid,
-                        events: 0x1 as libc::c_int as libc::c_short,
-                        revents: 0,
-                    };
-                    init
-                },
-            ];
+            let mut pollfds: [pollfd; 1] = [{
+                let init = pollfd {
+                    fd: fd_parent_pid,
+                    events: 0x1 as libc::c_int as libc::c_short,
+                    revents: 0,
+                };
+                init
+            }];
             let nfds: libc::c_int = poll(
                 pollfds.as_mut_ptr(),
                 1 as libc::c_int as nfds_t,
@@ -2767,8 +2712,7 @@ unsafe fn main_0(
                 1 as libc::c_int,
                 dcgettext(
                     0 as *const libc::c_char,
-                    b"cannot change root directory to '%s'\0" as *const u8
-                        as *const libc::c_char,
+                    b"cannot change root directory to '%s'\0" as *const u8 as *const libc::c_char,
                     5 as libc::c_int,
                 ),
                 newroot,
@@ -2793,8 +2737,7 @@ unsafe fn main_0(
     }
     if !procmnt.is_null() {
         if newroot.is_null()
-            && propagation
-                != (MS_PRIVATE as libc::c_int | MS_REC as libc::c_int) as libc::c_ulong
+            && propagation != (MS_PRIVATE as libc::c_int | MS_REC as libc::c_int) as libc::c_ulong
         {
             let rc: libc::c_int = mount(
                 b"none\0" as *const u8 as *const libc::c_char,
@@ -2820,8 +2763,8 @@ unsafe fn main_0(
             b"proc\0" as *const u8 as *const libc::c_char,
             procmnt,
             b"proc\0" as *const u8 as *const libc::c_char,
-            (MS_NOSUID as libc::c_int | MS_NOEXEC as libc::c_int
-                | MS_NODEV as libc::c_int) as libc::c_ulong,
+            (MS_NOSUID as libc::c_int | MS_NOEXEC as libc::c_int | MS_NODEV as libc::c_int)
+                as libc::c_ulong,
             0 as *const libc::c_void,
         ) != 0 as libc::c_int
         {
@@ -2837,8 +2780,7 @@ unsafe fn main_0(
         }
     }
     if force_gid != 0 {
-        if setgroups(0 as libc::c_int as size_t, 0 as *const __gid_t) != 0 as libc::c_int
-        {
+        if setgroups(0 as libc::c_int as size_t, 0 as *const __gid_t) != 0 as libc::c_int {
             err(
                 1 as libc::c_int,
                 dcgettext(
@@ -2895,7 +2837,7 @@ unsafe fn main_0(
 }
 
 pub fn main() {
-    let mut args: Vec::<*mut libc::c_char> = Vec::new();
+    let mut args: Vec<*mut libc::c_char> = Vec::new();
     for arg in ::std::env::args() {
         args.push(
             (::std::ffi::CString::new(arg))
@@ -2904,10 +2846,10 @@ pub fn main() {
         );
     }
     args.push(::core::ptr::null_mut());
-    std::process::exit(
-        unsafe { main_0(
+    std::process::exit(unsafe {
+        main_0(
             (args.len() - 1) as libc::c_int,
             args.as_mut_ptr() as *mut *mut libc::c_char,
-        ) }
-    );
+        )
+    });
 }
