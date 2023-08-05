@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::process::Command as StdCommand;
 
-use nix;
 use assert_cmd::Command;
+use nix;
 
 // compare impls compares 'unsharex' vs 'unshare'
 fn compare_impls<F: Fn(bool, &mut Command)>(f: F) -> std::process::Output {
@@ -18,32 +18,54 @@ fn compare_impls<F: Fn(bool, &mut Command)>(f: F) -> std::process::Output {
     let (mut lhs, mut rhs) = match (lhs_out, rhs_out) {
         (Err(le), Err(re)) => {
             panic!("error equality: {:?}, {:?}", le, re);
-        },
+        }
         (Err(le), _) => {
             panic!("unsharex error: {}", le);
         }
         (_, Err(re)) => {
             panic!("unshare error, but unsharex did not: {}", re);
-        },
-        (Ok(l), Ok(r)) => {
-            (l, r)
-        },
+        }
+        (Ok(l), Ok(r)) => (l, r),
     };
     // rewrite unsharex to unshare in stdout/stderr and such before asserting
     for out in vec![&mut lhs, &mut rhs] {
         let lhs_str = String::from_utf8(out.stdout.clone()).unwrap();
         out.stdout = lhs_str
-            .replace(assert_cmd::cargo::cargo_bin("unsharex").to_str().unwrap(), "unshare")
-            .replace("unsharex", "unshare").into_bytes();
+            .replace(
+                assert_cmd::cargo::cargo_bin("unsharex").to_str().unwrap(),
+                "unshare",
+            )
+            .replace("unsharex", "unshare")
+            .into_bytes();
         let lhs_str = String::from_utf8(out.stderr.clone()).unwrap();
         out.stderr = lhs_str
-            .replace(assert_cmd::cargo::cargo_bin("unsharex").to_str().unwrap(), "unshare")
-            .replace("unsharex", "unshare").into_bytes();
+            .replace(
+                assert_cmd::cargo::cargo_bin("unsharex").to_str().unwrap(),
+                "unshare",
+            )
+            .replace("unsharex", "unshare")
+            .into_bytes();
     }
 
-    assert_eq!(lhs.status, rhs.status, "status: {} != {}", lhs.status, rhs.status);
-    assert_eq!(lhs.stdout, rhs.stdout, "stdout\n{:?}\n{:?}", String::from_utf8(lhs.stdout.clone()), String::from_utf8(rhs.stdout.clone()));
-    assert_eq!(lhs.stderr, rhs.stderr, "stderr\n{:?}\n{:?}", String::from_utf8(lhs.stderr.clone()), String::from_utf8(rhs.stderr.clone()));
+    assert_eq!(
+        lhs.status, rhs.status,
+        "status: {} != {}",
+        lhs.status, rhs.status
+    );
+    assert_eq!(
+        lhs.stdout,
+        rhs.stdout,
+        "stdout\n{:?}\n{:?}",
+        String::from_utf8(lhs.stdout.clone()),
+        String::from_utf8(rhs.stdout.clone())
+    );
+    assert_eq!(
+        lhs.stderr,
+        rhs.stderr,
+        "stderr\n{:?}\n{:?}",
+        String::from_utf8(lhs.stderr.clone()),
+        String::from_utf8(rhs.stderr.clone())
+    );
 
     lhs
 }
@@ -73,13 +95,15 @@ fn test_simple() {
 fn test_shell() {
     let shell = compare_impls(|_, c| {
         c.args(vec!["--", "printenv", "SHELL"]);
-    }).stdout;
-    assert_eq!(std::env::var("SHELL").unwrap(), String::from_utf8(shell).unwrap().trim());
+    })
+    .stdout;
+    assert_eq!(
+        std::env::var("SHELL").unwrap(),
+        String::from_utf8(shell).unwrap().trim()
+    );
 
     let shell = compare_impls(|_, c| {
-        c
-            .env_remove("SHELL")
-            .args(vec!["printenv", "SHELL"]);
+        c.env_remove("SHELL").args(vec!["printenv", "SHELL"]);
     });
     assert_eq!(
         "".to_string(),
@@ -96,10 +120,12 @@ fn test_netns() {
     assert_eq!(
         compare_impls(|_, c| {
             c.args(vec!["-n", "--", "ip", "a"]);
-        }).stdout,
+        })
+        .stdout,
         r#"1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-"#.as_bytes(),
+"#
+        .as_bytes(),
     );
 }
 
@@ -134,7 +160,14 @@ fn test_make_each_ns() {
 
     let mut root_nses = HashMap::new();
     for ns in &nses {
-        root_nses.insert(ns.0, std::fs::read_link(format!("/proc/self/ns/{}", ns.1)).unwrap().to_str().unwrap().to_string());
+        root_nses.insert(
+            ns.0,
+            std::fs::read_link(format!("/proc/self/ns/{}", ns.1))
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .to_string(),
+        );
     }
 
     let parse_nses = |readlink_output: &str| {
@@ -147,7 +180,10 @@ fn test_make_each_ns() {
         out
     };
 
-    let readlink_cmd = format!("readlink /proc/self/ns/{{{}}}", nses.iter().map(|n| n.1).collect::<Vec<_>>().join(","));
+    let readlink_cmd = format!(
+        "readlink /proc/self/ns/{{{}}}",
+        nses.iter().map(|n| n.1).collect::<Vec<_>>().join(",")
+    );
 
     for unsharex in vec![true, false] {
         for ns in &nses {
@@ -155,9 +191,9 @@ fn test_make_each_ns() {
                 (false, "mount") | (false, "user") => {
                     // XXX: for some reason, unshare/unsharex work differently these and I don't
                     // get why yet. Come back to this.
-                    continue
+                    continue;
                 }
-                _ => {},
+                _ => {}
             }
             let nsf = tmp_dir.path().join(ns.0).to_str().unwrap().to_string();
 
@@ -178,9 +214,21 @@ fn test_make_each_ns() {
 
             for ns2 in &nses {
                 if ns.0 == ns2.0 {
-                    assert_ne!(outns.get(ns2.0), root_nses.get(ns2.0), "unsharex={}, ns={}", unsharex, ns.0);
+                    assert_ne!(
+                        outns.get(ns2.0),
+                        root_nses.get(ns2.0),
+                        "unsharex={}, ns={}",
+                        unsharex,
+                        ns.0
+                    );
                 } else {
-                    assert_eq!(outns.get(ns2.0), root_nses.get(ns2.0), "unsharex={}, ns={}", unsharex, ns.0);
+                    assert_eq!(
+                        outns.get(ns2.0),
+                        root_nses.get(ns2.0),
+                        "unsharex={}, ns={}",
+                        unsharex,
+                        ns.0
+                    );
                 }
             }
 

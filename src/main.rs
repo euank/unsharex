@@ -11,7 +11,5 @@ mod strutils;
 mod unshare;
 
 pub fn main() {
-    unsafe {
-        unshare::main()
-    }
+    unsafe { unshare::main() }
 }

@@ -111,7 +111,8 @@ unsafe extern "C" fn cap_last_by_procfs(ret: *mut libc::c_int) -> libc::c_int {
             f,
             b"%d\0" as *const u8 as *const libc::c_char,
             &mut cap as *mut libc::c_int,
-        ) == 1 as libc::c_int && cap < 2147483647 as libc::c_int
+        ) == 1 as libc::c_int
+            && cap < 2147483647 as libc::c_int
             && test_cap((cap + 1 as libc::c_int) as libc::c_uint) == 0
         {
             *ret = cap;
@@ -170,10 +171,8 @@ pub unsafe extern "C" fn cap_permitted_to_ambient() {
             ),
         );
     }
-    payload[0 as libc::c_int as usize]
-        .inheritable = payload[0 as libc::c_int as usize].permitted;
-    payload[1 as libc::c_int as usize]
-        .inheritable = payload[1 as libc::c_int as usize].permitted;
+    payload[0 as libc::c_int as usize].inheritable = payload[0 as libc::c_int as usize].permitted;
+    payload[1 as libc::c_int as usize].inheritable = payload[1 as libc::c_int as usize].permitted;
     if capset(&mut header, payload.as_mut_ptr()) < 0 as libc::c_int {
         err(
             1 as libc::c_int,
@@ -184,8 +183,8 @@ pub unsafe extern "C" fn cap_permitted_to_ambient() {
             ),
         );
     }
-    effective = (payload[1 as libc::c_int as usize].effective as uint64_t)
-        << 32 as libc::c_int | payload[0 as libc::c_int as usize].effective as uint64_t;
+    effective = (payload[1 as libc::c_int as usize].effective as uint64_t) << 32 as libc::c_int
+        | payload[0 as libc::c_int as usize].effective as uint64_t;
     cap = 0 as libc::c_int as uint64_t;
     while cap
         < (::core::mem::size_of::<uint64_t>() as libc::c_ulong)
@@ -205,8 +204,7 @@ pub unsafe extern "C" fn cap_permitted_to_ambient() {
                     1 as libc::c_int,
                     dcgettext(
                         0 as *const libc::c_char,
-                        b"prctl(PR_CAP_AMBIENT) failed\0" as *const u8
-                            as *const libc::c_char,
+                        b"prctl(PR_CAP_AMBIENT) failed\0" as *const u8 as *const libc::c_char,
                         5 as libc::c_int,
                     ),
                 );

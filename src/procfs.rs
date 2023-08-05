@@ -14,11 +14,7 @@ extern "C" {
     fn getegid() -> __gid_t;
     fn __errno_location() -> *mut libc::c_int;
     fn fstatfs(__fildes: libc::c_int, __buf: *mut statfs) -> libc::c_int;
-    fn strtoul(
-        _: *const libc::c_char,
-        _: *mut *mut libc::c_char,
-        _: libc::c_int,
-    ) -> libc::c_ulong;
+    fn strtoul(_: *const libc::c_char, _: *mut *mut libc::c_char, _: libc::c_int) -> libc::c_ulong;
     fn snprintf(
         _: *mut libc::c_char,
         _: libc::c_ulong,
@@ -26,16 +22,8 @@ extern "C" {
         _: ...
     ) -> libc::c_int;
     fn fputc(__c: libc::c_int, __stream: *mut FILE) -> libc::c_int;
-    fn fgets(
-        __s: *mut libc::c_char,
-        __n: libc::c_int,
-        __stream: *mut FILE,
-    ) -> *mut libc::c_char;
-    fn vfprintf(
-        _: *mut FILE,
-        _: *const libc::c_char,
-        _: ::core::ffi::VaList,
-    ) -> libc::c_int;
+    fn fgets(__s: *mut libc::c_char, __n: libc::c_int, __stream: *mut FILE) -> *mut libc::c_char;
+    fn vfprintf(_: *mut FILE, _: *const libc::c_char, _: ::core::ffi::VaList) -> libc::c_int;
     fn fprintf(_: *mut FILE, _: *const libc::c_char, _: ...) -> libc::c_int;
     fn fdopen(__fd: libc::c_int, __modes: *const libc::c_char) -> *mut FILE;
     fn fclose(__stream: *mut FILE) -> libc::c_int;
@@ -43,16 +31,8 @@ extern "C" {
     fn calloc(_: libc::c_ulong, _: libc::c_ulong) -> *mut libc::c_void;
     fn free(_: *mut libc::c_void);
     fn getenv(__name: *const libc::c_char) -> *mut libc::c_char;
-    fn memcpy(
-        _: *mut libc::c_void,
-        _: *const libc::c_void,
-        _: libc::c_ulong,
-    ) -> *mut libc::c_void;
-    fn memset(
-        _: *mut libc::c_void,
-        _: libc::c_int,
-        _: libc::c_ulong,
-    ) -> *mut libc::c_void;
+    fn memcpy(_: *mut libc::c_void, _: *const libc::c_void, _: libc::c_ulong) -> *mut libc::c_void;
+    fn memset(_: *mut libc::c_void, _: libc::c_int, _: libc::c_ulong) -> *mut libc::c_void;
     fn strcmp(_: *const libc::c_char, _: *const libc::c_char) -> libc::c_int;
     fn strdup(_: *const libc::c_char) -> *mut libc::c_char;
     fn strrchr(_: *const libc::c_char, _: libc::c_int) -> *mut libc::c_char;
@@ -68,10 +48,7 @@ extern "C" {
         __oflag: libc::c_int,
         _: ...
     ) -> libc::c_int;
-    fn nanosleep(
-        __requested_time: *const timespec,
-        __remaining: *mut timespec,
-    ) -> libc::c_int;
+    fn nanosleep(__requested_time: *const timespec, __remaining: *mut timespec) -> libc::c_int;
     fn closedir(__dirp: *mut DIR) -> libc::c_int;
     fn readdir(__dirp: *mut DIR) -> *mut dirent;
     fn dirfd(__dirp: *mut DIR) -> libc::c_int;
@@ -82,7 +59,7 @@ extern "C" {
     fn ul_path_set_dialect(
         pc: *mut path_cxt,
         data: *mut libc::c_void,
-        free_data: Option::<unsafe extern "C" fn(*mut path_cxt) -> ()>,
+        free_data: Option<unsafe extern "C" fn(*mut path_cxt) -> ()>,
     ) -> libc::c_int;
     fn ul_path_get_dialect(pc: *mut path_cxt) -> *mut libc::c_void;
     fn ul_path_get_dirfd(pc: *mut path_cxt) -> libc::c_int;
@@ -104,11 +81,7 @@ extern "C" {
         __buf: *mut stat,
         __flag: libc::c_int,
     ) -> libc::c_int;
-    fn ul_strtou64(
-        str: *const libc::c_char,
-        num: *mut uint64_t,
-        base: libc::c_int,
-    ) -> libc::c_int;
+    fn ul_strtou64(str: *const libc::c_char, num: *mut uint64_t, base: libc::c_int) -> libc::c_int;
 }
 pub type __builtin_va_list = [__va_list_tag; 1];
 #[derive(Copy, Clone)]
@@ -270,13 +243,9 @@ pub struct path_cxt {
     pub prefix: *mut libc::c_char,
     pub path_buffer: [libc::c_char; 4096],
     pub dialect: *mut libc::c_void,
-    pub free_dialect: Option::<unsafe extern "C" fn(*mut path_cxt) -> ()>,
-    pub redirect_on_enoent: Option::<
-        unsafe extern "C" fn(
-            *mut path_cxt,
-            *const libc::c_char,
-            *mut libc::c_int,
-        ) -> libc::c_int,
+    pub free_dialect: Option<unsafe extern "C" fn(*mut path_cxt) -> ()>,
+    pub redirect_on_enoent: Option<
+        unsafe extern "C" fn(*mut path_cxt, *const libc::c_char, *mut libc::c_int) -> libc::c_int,
     >,
 }
 #[derive(Copy, Clone)]
@@ -356,8 +325,7 @@ unsafe extern "C" fn read_all(
     while count > 0 as libc::c_int as libc::c_ulong {
         ret = read(fd, buf as *mut libc::c_void, count);
         if ret < 0 as libc::c_int as libc::c_long {
-            if (*__errno_location() == 11 as libc::c_int
-                || *__errno_location() == 4 as libc::c_int)
+            if (*__errno_location() == 11 as libc::c_int || *__errno_location() == 4 as libc::c_int)
                 && {
                     let fresh0 = tries;
                     tries = tries + 1;
@@ -366,15 +334,18 @@ unsafe extern "C" fn read_all(
             {
                 xusleep(250000 as libc::c_int as useconds_t);
             } else {
-                return if c != 0 { c } else { -(1 as libc::c_int) as libc::c_long }
+                return if c != 0 {
+                    c
+                } else {
+                    -(1 as libc::c_int) as libc::c_long
+                };
             }
         } else {
             if ret == 0 as libc::c_int as libc::c_long {
                 return c;
             }
             tries = 0 as libc::c_int;
-            count = (count as libc::c_ulong).wrapping_sub(ret as libc::c_ulong) as size_t
-                as size_t;
+            count = (count as libc::c_ulong).wrapping_sub(ret as libc::c_ulong) as size_t as size_t;
             buf = buf.offset(ret as isize);
             c += ret;
         }
@@ -389,7 +360,9 @@ unsafe extern "C" fn ul_debug_parse_mask(
     let mut res: libc::c_int = 0;
     let mut ptr: *mut libc::c_char = 0 as *mut libc::c_char;
     res = strtoul(mask, &mut ptr, 0 as libc::c_int) as libc::c_int;
-    if !ptr.is_null() && *ptr as libc::c_int != 0 && !flagnames.is_null()
+    if !ptr.is_null()
+        && *ptr as libc::c_int != 0
+        && !flagnames.is_null()
         && !((*flagnames.offset(0 as libc::c_int as isize)).name).is_null()
     {
         let mut msbuf: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -431,16 +404,14 @@ unsafe extern "C" fn ul_debug_parse_mask(
     return res;
 }
 static mut ulprocfs_debug_mask: libc::c_int = 0;
-static mut ulprocfs_masknames: [ul_debug_maskname; 1] = [
-    {
-        let init = ul_debug_maskname {
-            name: 0 as *const libc::c_char,
-            mask: 0 as libc::c_int,
-            help: 0 as *const libc::c_char,
-        };
-        init
-    },
-];
+static mut ulprocfs_masknames: [ul_debug_maskname; 1] = [{
+    let init = ul_debug_maskname {
+        name: 0 as *const libc::c_char,
+        mask: 0 as libc::c_int,
+        help: 0 as *const libc::c_char,
+    };
+    init
+}];
 #[inline]
 unsafe extern "C" fn ul_debugobj(
     handler: *const libc::c_void,
@@ -448,10 +419,12 @@ unsafe extern "C" fn ul_debugobj(
     args: ...
 ) {
     let mut ap: ::core::ffi::VaListImpl;
-    if !handler.is_null()
-        && ulprocfs_debug_mask & (1 as libc::c_int) << 24 as libc::c_int == 0
-    {
-        fprintf(stderr, b"[%p]: \0" as *const u8 as *const libc::c_char, handler);
+    if !handler.is_null() && ulprocfs_debug_mask & (1 as libc::c_int) << 24 as libc::c_int == 0 {
+        fprintf(
+            stderr,
+            b"[%p]: \0" as *const u8 as *const libc::c_char,
+            handler,
+        );
     }
     ap = args.clone();
     vfprintf(stderr, mesg, ap.as_va_list());
@@ -469,10 +442,7 @@ pub unsafe extern "C" fn ul_procfs_init_debug() {
     };
     if !(ulprocfs_debug_mask & (1 as libc::c_int) << 1 as libc::c_int != 0) {
         if 0 as libc::c_int == 0 && !envstr.is_null() {
-            ulprocfs_debug_mask = ul_debug_parse_mask(
-                ulprocfs_masknames.as_ptr(),
-                envstr,
-            );
+            ulprocfs_debug_mask = ul_debug_parse_mask(ulprocfs_masknames.as_ptr(), envstr);
         } else {
             ulprocfs_debug_mask = 0 as libc::c_int;
         }
@@ -482,8 +452,8 @@ pub unsafe extern "C" fn ul_procfs_init_debug() {
             ulprocfs_debug_mask |= (1 as libc::c_int) << 24 as libc::c_int;
             fprintf(
                 stderr,
-                b"%d: %s: don't print memory addresses (SUID executable).\n\0"
-                    as *const u8 as *const libc::c_char,
+                b"%d: %s: don't print memory addresses (SUID executable).\n\0" as *const u8
+                    as *const libc::c_char,
                 getpid(),
                 b"ulprocfs\0" as *const u8 as *const libc::c_char,
             );
@@ -523,10 +493,7 @@ pub unsafe extern "C" fn ul_new_procfs_path(
     return pc;
 }
 #[no_mangle]
-pub unsafe extern "C" fn procfs_process_init_path(
-    pc: *mut path_cxt,
-    pid: pid_t,
-) -> libc::c_int {
+pub unsafe extern "C" fn procfs_process_init_path(pc: *mut path_cxt, pid: pid_t) -> libc::c_int {
     let mut prc: *mut procfs_process = 0 as *mut procfs_process;
     let mut rc: libc::c_int = 0;
     let mut buf: [libc::c_char; 22] = [0; 22];
@@ -635,10 +602,7 @@ unsafe extern "C" fn read_procfs_file(
         i = i.wrapping_add(1);
         i;
     }
-    *buf
-        .offset(
-            (sz - 1 as libc::c_int as libc::c_long) as isize,
-        ) = '\0' as i32 as libc::c_char;
+    *buf.offset((sz - 1 as libc::c_int as libc::c_long) as isize) = '\0' as i32 as libc::c_char;
     return sz;
 }
 unsafe extern "C" fn procfs_process_get_data_for(
@@ -647,11 +611,7 @@ unsafe extern "C" fn procfs_process_get_data_for(
     bufsz: size_t,
     fname: *const libc::c_char,
 ) -> ssize_t {
-    let fd: libc::c_int = ul_path_open(
-        pc,
-        0 as libc::c_int | 0o2000000 as libc::c_int,
-        fname,
-    );
+    let fd: libc::c_int = ul_path_open(pc, 0 as libc::c_int | 0o2000000 as libc::c_int, fname);
     if fd >= 0 as libc::c_int {
         let sz: ssize_t = read_procfs_file(fd, buf, bufsz);
         close(fd);
@@ -734,12 +694,10 @@ pub unsafe extern "C" fn procfs_process_get_stat_nth(
         if i == n {
             return ul_strtou64(tok, re, 10 as libc::c_int);
         }
-        if i == 2 as libc::c_int
-            && {
-                p = strrchr(key, ')' as i32);
-                !p.is_null()
-            }
-        {
+        if i == 2 as libc::c_int && {
+            p = strrchr(key, ')' as i32);
+            !p.is_null()
+        } {
             key = p.offset(2 as libc::c_int as isize);
         }
         tok = strtok_r(
@@ -751,10 +709,7 @@ pub unsafe extern "C" fn procfs_process_get_stat_nth(
     return -(22 as libc::c_int);
 }
 #[no_mangle]
-pub unsafe extern "C" fn procfs_process_get_uid(
-    pc: *mut path_cxt,
-    uid: *mut uid_t,
-) -> libc::c_int {
+pub unsafe extern "C" fn procfs_process_get_uid(pc: *mut path_cxt, uid: *mut uid_t) -> libc::c_int {
     let mut sb: stat = stat {
         st_dev: 0,
         st_ino: 0,
@@ -767,9 +722,18 @@ pub unsafe extern "C" fn procfs_process_get_uid(
         st_size: 0,
         st_blksize: 0,
         st_blocks: 0,
-        st_atim: timespec { tv_sec: 0, tv_nsec: 0 },
-        st_mtim: timespec { tv_sec: 0, tv_nsec: 0 },
-        st_ctim: timespec { tv_sec: 0, tv_nsec: 0 },
+        st_atim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
+        st_mtim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
+        st_ctim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
         __glibc_reserved: [0; 3],
     };
     let mut rc: libc::c_int = 0;
@@ -835,9 +799,7 @@ pub unsafe extern "C" fn procfs_process_next_fd(
         {
             continue;
         }
-        if ul_strtou64(((*d).d_name).as_mut_ptr(), &mut num, 10 as libc::c_int)
-            < 0 as libc::c_int
-        {
+        if ul_strtou64(((*d).d_name).as_mut_ptr(), &mut num, 10 as libc::c_int) < 0 as libc::c_int {
             continue;
         }
         *fd = num as libc::c_int;
@@ -856,24 +818,21 @@ pub unsafe extern "C" fn procfs_dirent_is_process(d: *mut dirent) -> libc::c_int
     }
     if *(*__ctype_b_loc())
         .offset(*((*d).d_name).as_mut_ptr() as libc::c_uchar as libc::c_int as isize)
-        as libc::c_int & _ISdigit as libc::c_int as libc::c_ushort as libc::c_int == 0
+        as libc::c_int
+        & _ISdigit as libc::c_int as libc::c_ushort as libc::c_int
+        == 0
     {
         return 0 as libc::c_int;
     }
     return 1 as libc::c_int;
 }
 #[no_mangle]
-pub unsafe extern "C" fn procfs_dirent_get_pid(
-    d: *mut dirent,
-    pid: *mut pid_t,
-) -> libc::c_int {
+pub unsafe extern "C" fn procfs_dirent_get_pid(d: *mut dirent, pid: *mut pid_t) -> libc::c_int {
     let mut num: uint64_t = 0;
     if procfs_dirent_is_process(d) == 0 {
         return -(22 as libc::c_int);
     }
-    if ul_strtou64(((*d).d_name).as_mut_ptr(), &mut num, 10 as libc::c_int)
-        < 0 as libc::c_int
-    {
+    if ul_strtou64(((*d).d_name).as_mut_ptr(), &mut num, 10 as libc::c_int) < 0 as libc::c_int {
         return -(22 as libc::c_int);
     }
     *pid = num as pid_t;
@@ -897,15 +856,29 @@ pub unsafe extern "C" fn procfs_dirent_get_uid(
         st_size: 0,
         st_blksize: 0,
         st_blocks: 0,
-        st_atim: timespec { tv_sec: 0, tv_nsec: 0 },
-        st_mtim: timespec { tv_sec: 0, tv_nsec: 0 },
-        st_ctim: timespec { tv_sec: 0, tv_nsec: 0 },
+        st_atim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
+        st_mtim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
+        st_ctim: timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        },
         __glibc_reserved: [0; 3],
     };
     if procfs_dirent_is_process(d) == 0 {
         return -(22 as libc::c_int);
     }
-    if fstatat(dirfd(procfs), ((*d).d_name).as_mut_ptr(), &mut st, 0 as libc::c_int) != 0
+    if fstatat(
+        dirfd(procfs),
+        ((*d).d_name).as_mut_ptr(),
+        &mut st,
+        0 as libc::c_int,
+    ) != 0
     {
         return -(22 as libc::c_int);
     }
@@ -1026,9 +999,7 @@ pub unsafe extern "C" fn fd_is_procfs(fd: libc::c_int) -> libc::c_int {
         *__errno_location() = 0 as libc::c_int;
         ret = fstatfs(fd, &mut st);
         if ret < 0 as libc::c_int {
-            if *__errno_location() != 4 as libc::c_int
-                && *__errno_location() != 11 as libc::c_int
-            {
+            if *__errno_location() != 4 as libc::c_int && *__errno_location() != 11 as libc::c_int {
                 return 0 as libc::c_int;
             }
             xusleep(250000 as libc::c_int as useconds_t);
@@ -1053,7 +1024,10 @@ unsafe extern "C" fn strdup_procfs_file(
         pid,
         name,
     );
-    fd = open(buf.as_mut_ptr(), 0o2000000 as libc::c_int | 0 as libc::c_int);
+    fd = open(
+        buf.as_mut_ptr(),
+        0o2000000 as libc::c_int | 0 as libc::c_int,
+    );
     if fd < 0 as libc::c_int {
         return 0 as *mut libc::c_char;
     }

@@ -1,15 +1,11 @@
-use ::libc;
 use ::c2rust_bitfields::BitfieldStruct;
+use ::libc;
 extern "C" {
     fn __ctype_b_loc() -> *mut *const libc::c_ushort;
     fn __libc_current_sigrtmin() -> libc::c_int;
     fn __libc_current_sigrtmax() -> libc::c_int;
     fn __errno_location() -> *mut libc::c_int;
-    fn strtol(
-        _: *const libc::c_char,
-        _: *mut *mut libc::c_char,
-        _: libc::c_int,
-    ) -> libc::c_long;
+    fn strtol(_: *const libc::c_char, _: *mut *mut libc::c_char, _: libc::c_int) -> libc::c_long;
 }
 pub type C2RustUnnamed = libc::c_uint;
 pub const _ISalnum: C2RustUnnamed = 8;
@@ -43,8 +39,8 @@ pub struct C2RustUnnamed_2 {}
 #[inline]
 unsafe extern "C" fn c_tolower(c: libc::c_int) -> libc::c_int {
     match c {
-        65 | 66 | 67 | 68 | 69 | 70 | 71 | 72 | 73 | 74 | 75 | 76 | 77 | 78 | 79 | 80
-        | 81 | 82 | 83 | 84 | 85 | 86 | 87 | 88 | 89 | 90 => {
+        65 | 66 | 67 | 68 | 69 | 70 | 71 | 72 | 73 | 74 | 75 | 76 | 77 | 78 | 79 | 80 | 81 | 82
+        | 83 | 84 | 85 | 86 | 87 | 88 | 89 | 90 => {
             return c - 'A' as i32 + 'a' as i32;
         }
         _ => return c,
@@ -357,13 +353,16 @@ unsafe extern "C" fn rtsig_to_signum(mut sig: *const libc::c_char) -> libc::c_in
         maxi = 1 as libc::c_int;
     }
     if *(*__ctype_b_loc()).offset(*sig as libc::c_int as isize) as libc::c_int
-        & _ISdigit as libc::c_int as libc::c_ushort as libc::c_int == 0
+        & _ISdigit as libc::c_int as libc::c_ushort as libc::c_int
+        == 0
     {
         return -(1 as libc::c_int);
     }
     *__errno_location() = 0 as libc::c_int;
     num = strtol(sig, &mut ep, 10 as libc::c_int) as libc::c_int;
-    if ep.is_null() || sig == ep as *const libc::c_char || *__errno_location() != 0
+    if ep.is_null()
+        || sig == ep as *const libc::c_char
+        || *__errno_location() != 0
         || num < 0 as libc::c_int
     {
         return -(1 as libc::c_int);
@@ -412,9 +411,7 @@ pub unsafe extern "C" fn signame_to_signum(mut sig: *const libc::c_char) -> libc
     return -(1 as libc::c_int);
 }
 #[no_mangle]
-pub unsafe extern "C" fn signum_to_signame(
-    signum: libc::c_int,
-) -> *const libc::c_char {
+pub unsafe extern "C" fn signum_to_signame(signum: libc::c_int) -> *const libc::c_char {
     let mut n: size_t = 0;
     n = 0 as libc::c_int as size_t;
     while n
