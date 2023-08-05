@@ -187,10 +187,9 @@ fn test_make_each_ns() {
 
     for unsharex in vec![true, false] {
         for ns in &nses {
-            match (unsharex, ns.0) {
-                (false, "mount") | (false, "user") => {
-                    // XXX: for some reason, unshare/unsharex work differently these and I don't
-                    // get why yet. Come back to this.
+            match ns.0 {
+                "mount" | "user" => {
+                    // finicky namespaces, handle em separately in other tests
                     continue;
                 }
                 _ => {}

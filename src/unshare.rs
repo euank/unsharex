@@ -7,6 +7,7 @@ extern "C" {
     pub type _IO_marker;
     fn __errno_location() -> *mut libc::c_int;
     static mut program_invocation_short_name: *mut libc::c_char;
+    static mut optarg: *mut libc::c_char;
     static mut optind: libc::c_int;
     fn getopt_long(
         ___argc: libc::c_int,
@@ -2228,7 +2229,6 @@ unsafe fn main_0(argc: libc::c_int, argv: *mut *mut libc::c_char) -> i32 {
     unsafe {
         close_stdout_atexit();
     }
-    let mut optarg: *mut libc::c_char = 0 as *mut i8;
     loop {
         c = unsafe {
             getopt_long(
