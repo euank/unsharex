@@ -1,8 +1,59 @@
 use std::collections::HashMap;
-use std::process::Command as StdCommand;
 
 use assert_cmd::Command;
 use nix;
+
+#[derive(Debug, PartialEq, Eq)]
+struct Ns<'a> {
+    proc_name: &'a str,
+    name: &'a str,
+    short_flag: char,
+}
+
+const MNT: Ns<'static> = Ns {
+    proc_name: "mnt",
+    name: "mount",
+    short_flag: 'm',
+};
+const UTS: Ns<'static> = Ns {
+    proc_name: "uts",
+    name: "uts",
+    short_flag: 'u',
+};
+const IPC: Ns<'static> = Ns {
+    proc_name: "ipc",
+    name: "ipc",
+    short_flag: 'i',
+};
+const NET: Ns<'static> = Ns {
+    proc_name: "net",
+    name: "net",
+    short_flag: 'n',
+};
+const PID: Ns<'static> = Ns {
+    proc_name: "pid",
+    name: "pid",
+    short_flag: 'p',
+};
+const USER: Ns<'static> = Ns {
+    proc_name: "user",
+    name: "user",
+    short_flag: 'U',
+};
+const CGROUP: Ns<'static> = Ns {
+    proc_name: "cgroup",
+    name: "cgroup",
+    short_flag: 'C',
+};
+const TIME: Ns<'static> = Ns {
+    proc_name: "time",
+    name: "time",
+    short_flag: 'T',
+};
+
+const NSES: [Ns<'static>; 8] = [
+    MNT, UTS, IPC, NET, PID, USER, CGROUP, TIME,
+];
 
 // compare impls compares 'unsharex' vs 'unshare'
 fn compare_impls<F: Fn(bool, &mut Command)>(f: F) -> std::process::Output {
@@ -130,39 +181,28 @@ fn test_netns() {
 }
 
 #[test]
-fn test_make_each_ns() {
+// This test creates each easy-to-create namespace (i.e. not mount or user), and verifies that
+// /proc/self/ns/{ns}, but other namespaces don't.
+fn test_make_each_simple_ns() {
     if users::get_effective_uid() != 0 {
         eprintln!("skipping test that requires root");
         return;
     };
 
-    // Join each namespace in the two different forms you can
-    // the '-t$PID' format, and the '/file' format
+    println!("debug: {:?}", std::fs::read_dir("/proc/self/ns").unwrap().into_iter().collect::<Vec<_>>());
 
     // first, create some namespace files and keep em open with an unshare
     let tmp_dir = tempfile::tempdir().unwrap();
-    let nses = vec![
-        // (long flag, proc name, short flag)
-        // long flag is also the filename of /proc/self/ns/$file
-        ("mount", "mnt", "m"),
-        ("uts", "uts", "u"),
-        ("ipc", "ipc", "i"),
-        ("net", "net", "n"),
-        ("pid", "pid", "p"),
-        ("user", "user", "U"),
-        ("cgroup", "cgroup", "C"),
-        ("time", "time", "T"),
-    ];
 
-    for ns in &nses {
-        std::fs::File::create(tmp_dir.path().join(ns.0)).unwrap();
+    for ns in NSES {
+        std::fs::File::create(tmp_dir.path().join(ns.name)).unwrap();
     }
 
     let mut root_nses = HashMap::new();
-    for ns in &nses {
+    for ns in NSES {
         root_nses.insert(
-            ns.0,
-            std::fs::read_link(format!("/proc/self/ns/{}", ns.1))
+            ns.name,
+            std::fs::read_link(format!("/proc/self/ns/{}", ns.proc_name))
                 .unwrap()
                 .to_str()
                 .unwrap()
@@ -173,28 +213,28 @@ fn test_make_each_ns() {
     let parse_nses = |readlink_output: &str| {
         let mut out = HashMap::new();
         let lines = readlink_output.lines().collect::<Vec<_>>();
-        assert_eq!(lines.len(), nses.len());
-        for (i, ns) in nses.iter().enumerate() {
-            out.insert(ns.0, lines[i].to_string());
+        assert_eq!(lines.len(), NSES.len());
+        for (i, ns) in NSES.iter().enumerate() {
+            out.insert(ns.name, lines[i].to_string());
         }
         out
     };
 
     let readlink_cmd = format!(
         "readlink /proc/self/ns/{{{}}}",
-        nses.iter().map(|n| n.1).collect::<Vec<_>>().join(",")
+        NSES.iter().map(|n| n.proc_name).collect::<Vec<_>>().join(",")
     );
 
     for unsharex in vec![true, false] {
-        for ns in &nses {
-            match ns.0 {
-                "mount" | "user" => {
+        for ns in NSES {
+            match ns {
+                ns if ns == MNT || ns == USER => {
                     // finicky namespaces, handle em separately in other tests
                     continue;
                 }
                 _ => {}
             }
-            let nsf = tmp_dir.path().join(ns.0).to_str().unwrap().to_string();
+            let nsf = tmp_dir.path().join(ns.name).to_str().unwrap().to_string();
 
             let mut cmd = if unsharex {
                 Command::cargo_bin("unsharex").unwrap()
@@ -202,31 +242,31 @@ fn test_make_each_ns() {
                 Command::new("unshare")
             };
 
-            cmd.args(vec![&format!("--{}={}", ns.0, nsf)]);
-            if ns.0 == "pid" {
+            cmd.args(vec![&format!("--{}={}", ns.name, nsf)]);
+            if ns == PID {
                 // special case, need to fork or pid namespaces don't work
                 cmd.arg("--fork");
             }
-            cmd.args(vec!["--", "sh", "-c", &readlink_cmd]);
+            cmd.args(vec!["--", "bash", "-c", &readlink_cmd]);
             let out = cmd.unwrap();
             let outns = parse_nses(&String::from_utf8(out.stdout).unwrap());
 
-            for ns2 in &nses {
-                if ns.0 == ns2.0 {
+            for ns2 in NSES {
+                if ns == ns2 {
                     assert_ne!(
-                        outns.get(ns2.0),
-                        root_nses.get(ns2.0),
+                        outns.get(ns2.name),
+                        root_nses.get(ns2.name),
                         "unsharex={}, ns={}",
                         unsharex,
-                        ns.0
+                        ns.name
                     );
                 } else {
                     assert_eq!(
-                        outns.get(ns2.0),
-                        root_nses.get(ns2.0),
+                        outns.get(ns2.name),
+                        root_nses.get(ns2.name),
                         "unsharex={}, ns={}",
                         unsharex,
-                        ns.0
+                        ns.name
                     );
                 }
             }
@@ -234,5 +274,51 @@ fn test_make_each_ns() {
             // and cleanup
             let _ = nix::mount::umount(nsf.as_str());
         }
+    }
+}
+
+#[test]
+fn test_make_mount_ns() {
+    if users::get_effective_uid() != 0 {
+        eprintln!("skipping test that requires root");
+        return;
+    };
+
+    let tmp_dir = tempfile::tempdir().unwrap();
+    let path = tmp_dir.path();
+
+    std::fs::create_dir(path.join("proc")).unwrap();
+
+    let manifest_path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let mut cmd = std::process::Command::new("cargo");
+    cmd.current_dir(format!("{}/testbins/printnamespaces", &manifest_path));
+    cmd.args(vec!["build", "--target", "x86_64-unknown-linux-musl"]);
+    println!("Running {:?}", cmd);
+    cmd
+        .status()
+        .unwrap();
+
+    let test_bin_path = format!("{}/testbins/printnamespaces/target/x86_64-unknown-linux-musl/debug/printnamespaces", &manifest_path);
+    let test_bin_path = std::path::Path::new(&test_bin_path);
+
+    let out = std::process::Command::new(&test_bin_path).output().unwrap();
+    let outstr = String::from_utf8(out.stdout).unwrap();
+    let host_mount_ns = outstr.lines().find(|line| line.starts_with("mnt")).unwrap();
+
+
+    std::fs::copy(test_bin_path, path.join("printnamespaces")).unwrap();
+    for unsharex in vec![false, true] {
+        let mut cmd = if unsharex {
+            Command::cargo_bin("unsharex").unwrap()
+        } else {
+            Command::new("unshare")
+        };
+
+        cmd.args(vec!["--mount-proc", "--mount", &format!("--root={}", path.to_string_lossy()), "--", "/printnamespaces"]);
+        let out = cmd.unwrap();
+        let outstr = String::from_utf8(out.stdout).unwrap();
+        let outns = outstr.lines().find(|line| line.starts_with("mnt")).unwrap();
+
+        assert_ne!(host_mount_ns, outns);
     }
 }
