@@ -51,9 +51,7 @@ const TIME: Ns<'static> = Ns {
     short_flag: 'T',
 };
 
-const NSES: [Ns<'static>; 8] = [
-    MNT, UTS, IPC, NET, PID, USER, CGROUP, TIME,
-];
+const NSES: [Ns<'static>; 8] = [MNT, UTS, IPC, NET, PID, USER, CGROUP, TIME];
 
 // compare impls compares 'unsharex' vs 'unshare'
 fn compare_impls<F: Fn(bool, &mut Command)>(f: F) -> std::process::Output {
@@ -189,7 +187,13 @@ fn test_make_each_simple_ns() {
         return;
     };
 
-    println!("debug: {:?}", std::fs::read_dir("/proc/self/ns").unwrap().into_iter().collect::<Vec<_>>());
+    println!(
+        "debug: {:?}",
+        std::fs::read_dir("/proc/self/ns")
+            .unwrap()
+            .into_iter()
+            .collect::<Vec<_>>()
+    );
 
     // first, create some namespace files and keep em open with an unshare
     let tmp_dir = tempfile::tempdir().unwrap();
@@ -222,7 +226,10 @@ fn test_make_each_simple_ns() {
 
     let readlink_cmd = format!(
         "readlink /proc/self/ns/{{{}}}",
-        NSES.iter().map(|n| n.proc_name).collect::<Vec<_>>().join(",")
+        NSES.iter()
+            .map(|n| n.proc_name)
+            .collect::<Vec<_>>()
+            .join(",")
     );
 
     for unsharex in vec![true, false] {
@@ -294,17 +301,17 @@ fn test_make_mount_ns() {
     cmd.current_dir(format!("{}/testbins/printnamespaces", &manifest_path));
     cmd.args(vec!["build", "--target", "x86_64-unknown-linux-musl"]);
     println!("Running {:?}", cmd);
-    cmd
-        .status()
-        .unwrap();
+    cmd.status().unwrap();
 
-    let test_bin_path = format!("{}/testbins/printnamespaces/target/x86_64-unknown-linux-musl/debug/printnamespaces", &manifest_path);
+    let test_bin_path = format!(
+        "{}/testbins/printnamespaces/target/x86_64-unknown-linux-musl/debug/printnamespaces",
+        &manifest_path
+    );
     let test_bin_path = std::path::Path::new(&test_bin_path);
 
     let out = std::process::Command::new(&test_bin_path).output().unwrap();
     let outstr = String::from_utf8(out.stdout).unwrap();
     let host_mount_ns = outstr.lines().find(|line| line.starts_with("mnt")).unwrap();
-
 
     std::fs::copy(test_bin_path, path.join("printnamespaces")).unwrap();
     for unsharex in vec![false, true] {
@@ -314,7 +321,13 @@ fn test_make_mount_ns() {
             Command::new("unshare")
         };
 
-        cmd.args(vec!["--mount-proc", "--mount", &format!("--root={}", path.to_string_lossy()), "--", "/printnamespaces"]);
+        cmd.args(vec![
+            "--mount-proc",
+            "--mount",
+            &format!("--root={}", path.to_string_lossy()),
+            "--",
+            "/printnamespaces",
+        ]);
         let out = cmd.unwrap();
         let outstr = String::from_utf8(out.stdout).unwrap();
         let outns = outstr.lines().find(|line| line.starts_with("mnt")).unwrap();
