@@ -228,7 +228,7 @@ fn test_make_each_simple_ns() {
     for unsharex in vec![true, false] {
         for ns in NSES {
             match ns {
-                ns if ns == MNT || ns == USER => {
+                ns if ns == MNT || ns == USER || ns == TIME => {
                     // finicky namespaces, handle em separately in other tests
                     continue;
                 }
